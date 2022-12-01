@@ -7378,6 +7378,11 @@ react-native-keyboard-aware-scroll-view@^0.9.5:
     prop-types "^15.6.2"
     react-native-iphone-x-helper "^1.0.3"
 
+react-native-keychain@^8.1.1:
+  version "8.1.1"
+  resolved "https://registry.yarnpkg.com/react-native-keychain/-/react-native-keychain-8.1.1.tgz#3bb5e37946b964a7bcf7df2fe470dd244e01a340"
+  integrity sha512-8fxgeHKwGcL657eAYpdBTkDIxNhbIHI+kyyO0Yac2dgVAN184JoIwQcW2z6snahwDaCObQOu0biLFHnsH+4KSg==
+
 react-native-linear-gradient@^2.6.2:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.6.2.tgz#56598a76832724b2afa7889747635b5c80948f38"
@@ -7514,6 +7519,11 @@ react-native-ultimate-config@^4.0.0:
     handlebars "^4.7.7"
     js-yaml "^3"
     yargs "^16"
+
+react-native-uuid@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-uuid/-/react-native-uuid-2.0.1.tgz#ed4e2dfb1683eddb66967eb5dca140dfe1abddb9"
+  integrity sha512-cptnoIbL53GTCrWlb/+jrDC6tvb7ypIyzbXNJcpR3Vab0mkeaaVd5qnB3f0whXYzS+SMoSQLcUUB0gEWqkPC0g==
 
 react-native-vector-icons@^9.2.0:
   version "9.2.0"

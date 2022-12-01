@@ -1,12 +1,15 @@
 // import * as RNLocalize from "react-native-localize";
+import { getGenericPassword as GetGenericPasswordFromKeyChain, setGenericPassword as SetGenericPasswordFromKeyChain } from 'react-native-keychain';
 import { MMKVInstance, MMKVLoader, useMMKVStorage } from "react-native-mmkv-storage";
+import uuid from 'react-native-uuid';
+import { config } from 'src/api/config';
 import { ILanguages, LanguageType } from "src/language/Language";
 import { _showErrorMessage } from "utils";
 
 export type StorageType = "userData" | "isLogin" | "firebaseToken" |
-    "authToken" | "selectedLanguage" | 'socketConnected' | "allLanguages"
+    "authToken" | "selectedLanguage" | 'socketConnected' | "allLanguages" | "uuid"
 const StorageVariables = ["userData", "isLogin", "firebaseToken",
-    "authToken", "selectedLanguage", 'socketConnected', "allLanguages"]
+    "authToken", "selectedLanguage", 'socketConnected', "allLanguages", "uuid"]
 
 type DataBaseType = {
     userData?: any
@@ -18,6 +21,38 @@ type DataBaseType = {
     allLanguages?: ILanguages
 }
 
+const retrieveToken = () => {
+    console.log("Retrieving Token");
+
+    GetGenericPasswordFromKeyChain({ service: config.BUNDLE_ID_PACKAGE_NAME }).then((res) => {
+        console.log("RES", res);
+        if (res && res?.service == config.BUNDLE_ID_PACKAGE_NAME && res?.username == config.BUNDLE_ID_PACKAGE_NAME && res?.password) {
+            console.log("uuid is ", res?.password);
+            Database.getInstance()?.setValue('uuid', res?.password)
+            return
+        }
+        console.log("Generating new Token");
+        let newToken = ''
+        try {
+            newToken = uuid?.v4()?.toString();
+        }
+        catch (e) {
+            console.log("Error generating new Token")
+            console.log(e)
+        }
+        console.log("New Token is ", newToken);
+        SetGenericPasswordFromKeyChain(config.BUNDLE_ID_PACKAGE_NAME, newToken, { service: config.BUNDLE_ID_PACKAGE_NAME }).then(res => {
+            Database.getInstance()?.setValue('uuid', newToken)
+        }).catch(e => {
+            console.log("Error setting uuid in the KeyChain")
+            console.log(e)
+        })
+    }).catch(e => {
+        console.log("Error getting uuid from KeyChain")
+        console.log(e)
+    });
+}
+
 class Database {
 
     private static mInstance: Database
@@ -25,6 +60,9 @@ class Database {
     static getInstance = () => {
         if (!this.mInstance) {
             this.mInstance = new Database()
+            const uuid = this.mInstance.getStoredValue('uuid');
+            console.log("uuid is ", uuid);
+            if (!uuid) retrieveToken();
         }
         return this.mInstance
     }
@@ -36,6 +74,7 @@ class Database {
     private otherDataStorage = new MMKVLoader().withEncryption().withInstanceID("otherDataStorage").initialize();
     private languageStorage = new MMKVLoader().withEncryption().withInstanceID("languageStorage").initialize();
     private socketStorage = new MMKVLoader().withEncryption().withInstanceID("socketStorage").initialize();
+    private uuidStorage = new MMKVLoader().withEncryption().withInstanceID("uuidStorage").initialize();
 
     DefaultCountry = 'US' // RNLocalize.getCountry() ?? 'US'
 
@@ -72,7 +111,6 @@ class Database {
             case 'allLanguages':
             case 'selectedLanguage':
                 return this.languageStorage
-
             case 'authToken':
             case 'isLogin':
             case 'authToken':
@@ -81,6 +119,8 @@ class Database {
                 return this.userDataStorage
             case 'socketConnected':
                 return this.socketStorage
+            case 'uuid':
+                return this.uuidStorage
 
             default:
                 return Database.phoneStorage
@@ -132,11 +172,10 @@ class Database {
             case 'authToken':
             case 'firebaseToken':
             case 'selectedLanguage':
+            case 'uuid':
                 return this.getStorageForKey(key).getString(key) || defaultValue
 
             case 'isLogin':
-                return this.getStorageForKey(key).getBool(key) || defaultValue
-
             case 'socketConnected':
                 return this.getStorageForKey(key).getBool(key) || defaultValue
 
@@ -151,11 +190,10 @@ class Database {
         switch (key) {
             case 'authToken':
             case 'firebaseToken':
+            case 'uuid':
                 return this.getStorageForKey(key).setString(key, value ?? "")
 
             case 'isLogin':
-                return this.getStorageForKey(key).setBool(key, value ?? false)
-
             case 'socketConnected':
                 return this.getStorageForKey(key).setBool(key, value ?? false)
 
