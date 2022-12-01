@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">theDoc</string>
+    <string moduleConfig="true" name="CodePushDeploymentKey">@string/CODEPUSH_DEPLOY_KEY</string>
+</resources>

@@ -1,0 +1,23 @@
+{
+  "images": [
+    {
+      "filename": "bootsplash_background.png",
+      "idiom": "universal",
+      "scale": "1x"
+    },
+    {
+      "filename": "bootsplash_background.png",
+      "idiom": "universal",
+      "scale": "2x"
+    },
+    {
+      "filename": "bootsplash_background.png",
+      "idiom": "universal",
+      "scale": "3x"
+    }
+  ],
+  "info": {
+    "author": "deepak",
+    "version": 1
+  }
+}

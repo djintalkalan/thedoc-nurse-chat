@@ -1,0 +1,56 @@
+{
+    "extends": "@tsconfig/react-native/tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": "./", /* Base directory to resolve non-absolute module names. */
+        "paths": {
+            "assets": [
+                "src/assets/"
+            ],
+            "assets/*": [
+                "src/assets/*",
+            ],
+            "app-store": [
+                "src/redux/"
+            ],
+            "app-store/*": [
+                "src/redux/*"
+            ],
+            "language": [
+                "src/localization/"
+            ],
+            "api": [
+                "src/api"
+            ],
+            "api/*": [
+                "src/api/*"
+            ],
+            "utils": [
+                "src/utils"
+            ],
+            "utils/*": [
+                "src/utils/*"
+            ],
+            "custom-components": [
+                "src/components"
+            ],
+            "custom-components/*": [
+                "src/components/*"
+            ],
+            "screens/*": [
+                "src/screens/*"
+            ],
+            "database": [
+                "src/database/Database"
+            ],
+            "socket": [
+                "src/socket"
+            ],
+            "socket/*": [
+                "src/socket/*"
+            ],
+            "analytics": [
+                "src/analytics/AnalyticService"
+            ],
+        },
+    }
+}
