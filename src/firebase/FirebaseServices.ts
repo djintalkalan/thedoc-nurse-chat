@@ -31,7 +31,7 @@ let isFirstTime = true
 
 let dispatch: Dispatch<any>
 
-export const useFirebaseNotifications = () => {
+export const useFirebaseServices = () => {
     const [isLogin] = useDatabase<boolean>("isLogin");
 
     const updateLanguage = useUpdateLanguage()

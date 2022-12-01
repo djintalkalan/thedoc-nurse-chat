@@ -14,6 +14,7 @@ module.exports = (api) => {
         "custom-components": "./src/components",
         "screens": "./src/screens",
         "database": "./src/database/Database.ts",
+        "firebase-services": "./src/firebase/FirebaseServices.ts",
         "socket": "./src/socket",
         "analytics": "./src/analytics/AnalyticService.ts",
         "intercom": "./src/intercom/IntercomService.ts",
@@ -31,9 +32,6 @@ module.exports = (api) => {
     plugins: [
       ...plugins,
       'react-native-reanimated/plugin'
-    ],
-    ignore: [
-      "node_modules/aws-sdk/dist/aws-sdk-react-native.js"
     ]
   }
 };

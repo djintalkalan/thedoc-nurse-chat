@@ -3,12 +3,12 @@
  */
 import notifee, { EventType } from "@notifee/react-native";
 import messaging from '@react-native-firebase/messaging';
+import { onMessageReceived, onNotificationOpened } from 'firebase-services';
 import React from 'react';
 import { AppRegistry } from 'react-native';
 import 'react-native-gesture-handler';
 import invokeApp from 'react-native-invoke-app';
 import App from 'src/App';
-import { onMessageReceived, onNotificationOpened } from 'src/notification/FirebaseNotification';
 import { name as appName } from './app.json';
 import './ReactotronConfig';
 

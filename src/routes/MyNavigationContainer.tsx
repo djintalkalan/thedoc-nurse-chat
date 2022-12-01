@@ -8,13 +8,13 @@ import { BottomMenu } from 'custom-components/BottomMenu';
 import { ImageZoom } from 'custom-components/ImageZoom';
 import { TouchAlert } from 'custom-components/TouchAlert';
 import DropdownAlert from 'dj-react-native-dropdown-alert';
+import { useFirebaseServices } from 'firebase-services';
 import * as React from 'react';
 import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 import { useDatabase } from 'src/database/Database';
 import { useLanguage } from 'src/language/Language';
-import { useFirebaseNotifications } from 'src/notification/FirebaseNotification';
 
 import Login from 'screens/Auth/Login';
 import NurseChat from 'screens/Chat/NurseChat/NurseChat';
@@ -54,7 +54,7 @@ const getScreenOptions = (name: string): NativeStackNavigationOptions | undefine
   }
 }
 const MyNavigationContainer = () => {
-  useFirebaseNotifications();
+  useFirebaseServices();
   useLocalAuthentication()
   const dispatch = useDispatch();
 

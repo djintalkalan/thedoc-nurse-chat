@@ -42,6 +42,9 @@
             "database": [
                 "src/database/Database"
             ],
+            "firebase-services": [
+                "src/firebase/FirebaseServices"
+            ],
             "socket": [
                 "src/socket"
             ],
