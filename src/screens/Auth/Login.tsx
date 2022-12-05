@@ -21,7 +21,7 @@ const Login: FC = () => {
     const { control, handleSubmit, getValues, setValue, formState: { errors, isValid } } = useForm<LoginFormType>({
         defaultValues: __DEV__ ? Platform.OS == 'ios' ? {
 
-            username: config.APP_TYPE == 'dev' ? "anup" : "anup",
+            username: config.APP_TYPE == 'dev' ? "mukeshnurse" : "mukeshnurse",
             password: config.APP_TYPE == 'dev' ? "Shine@2015" : "Shine@2015",
             // email: "deepakq@testings.com",
             // password: "Dj@123456",
@@ -29,7 +29,7 @@ const Login: FC = () => {
         } : {
             // email: "deepakq@testings.com",
             //     password: "Dj@123456",
-            username: config.APP_TYPE == 'dev' ? "anup" : "anup",
+            username: config.APP_TYPE == 'dev' ? "mukeshnurse" : "mukeshnurse",
             password: config.APP_TYPE == 'dev' ? "Shine@2015" : "Shine@2015",
         } : {},
         mode: 'onChange'

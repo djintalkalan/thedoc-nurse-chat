@@ -1,4 +1,4 @@
-# Picnic Groups project setup guide :
+# Project setup guide :
 
 ### 1. Before proceeding download required files and extract them.
 

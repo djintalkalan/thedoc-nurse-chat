@@ -40,7 +40,8 @@ class Service {
                     extraHeaders: {
                         Authorization: "Bearer " + authToken,
                         'Accept-Language': selectedLanguage,
-                        platform: 'app'
+                        platform: 'nurseapp',
+                        uuid: Database.getStoredValue('uuid'),
                     }
                 }
                 console.log('url', url);

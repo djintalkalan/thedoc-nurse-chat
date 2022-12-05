@@ -1,7 +1,7 @@
 import { config } from 'api/config';
 import { setLoadingAction, tokenExpired } from 'app-store/actions';
 import { store } from 'app-store/store';
-import axios, { AxiosResponse, Method } from 'axios';
+import axios, { AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
 import React, { MutableRefObject } from 'react';
 import { Progress, Request, RNS3 } from 'react-native-aws3';
 import Database from 'src/database/Database';
@@ -12,11 +12,12 @@ import { _showErrorMessage, _showErrorMessageParsed } from 'utils';
 const FORCE_GET_CONTENT_TYPE_URLS = ['patient/address', 'getLanguage']
 
 interface header {
-  Accept?: string;
   "Content-Type"?: string;
-  Authorization?: string,
-  "X-Platform-Type"?: string;
   "Accept-Language"?: LanguageType
+  Accept?: string;
+  Authorization?: string,
+  platform?: string
+  uuid: string
 }
 
 interface IApiResponse {
@@ -103,9 +104,11 @@ async function callApi(url: string, header: header, body: any, method?: Method):
     method: method,
     url: url,
     data: body,
-    headers: header,
-    transformRequest: FORCE_GET_CONTENT_TYPE_URLS?.includes(url) && method == 'GET' ? (data, headers) => {
-      headers.get = { "Content-Type": "application/json", }
+    headers: header as unknown as AxiosRequestHeaders,
+    transformRequest: FORCE_GET_CONTENT_TYPE_URLS?.includes(url) && method == 'GET' ? (data, headers: any) => {
+      if (headers) {
+        headers.get = { "Content-Type": "application/json", }
+      }
       return {}
     } : undefined
   })
@@ -121,11 +124,12 @@ async function fetchApiData(url: string, method?: Method, body?: any) {
   const authToken = Database.getStoredValue('authToken')
   const selectedLanguage = Database.getStoredValue<LanguageType>('selectedLanguage') || "en"
   try {
-    const header = {
+    const header: header = {
       "Content-Type": (isMultipart) ? "multipart/form-data" : "application/json",
-      'authToken': authToken,
-      'auth-token': authToken,
-      // 'Accept-Language': selectedLanguage
+      Authorization: authToken ? `Bearer ${authToken}` : '',
+      'Accept-Language': selectedLanguage,
+      platform: 'nurseapp',
+      uuid: Database.getStoredValue('uuid')
     }
     return callApi(url, header, body, method)
   } catch (error: any) {
@@ -137,8 +141,8 @@ const callUploadFileAWS = async (file: { uri: string, name: string, type: any, }
   console.log("Body S3", JSON.stringify(file))
   try {
     const options = {
-      keyPrefix: prefix == 'video' ? "" : (config.AWS3_KEY_PREFIX),
-      bucket: prefix == 'video' ? config.AWS3_VIDEO_BUCKET : config.AWS3_IMAGE_BUCKET,
+      keyPrefix: config.AWS3_KEY_PREFIX,
+      bucket: config.AWS3_IMAGE_BUCKET,
       region: config.AWS3_REGION,
       accessKey: config.AWS3_ACCESS_K + config.AWS3_ACCESS_E + config.AWS3_ACCESS_Y,
       secretKey: config.AWS3_SECRET_K + config.AWS3_SECRET_E + config.AWS3_SECRET_Y,
@@ -179,8 +183,13 @@ const objectToParamString = (body: any) => {
 }
 
 export const _doLogin = async (body: any) => {
-  console.log("----------_verifyMobile Api Call ---------------")
-  return fetchApiData('auth/verify/mobile', "POST", body)
+  console.log("----------_doLogin Api Call ---------------")
+  return fetchApiData('nurse/login', "POST", body)
+}
+
+export const _getChatList = async (body: string) => {
+  console.log("----------_doLogin Api Call ---------------")
+  return fetchApiData('nurse/chat-listing/?search=', "POST", body)
 }
 
 export const _getAppVersion = async () => {

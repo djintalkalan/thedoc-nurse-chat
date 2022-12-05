@@ -6,14 +6,14 @@ import RNExitApp from 'react-native-exit-app';
 import { call, put, takeLatest } from "redux-saga/effects";
 import Database from 'src/database/Database';
 import Language from 'src/language/Language';
-import { WaitTill, _showPopUpAlert } from "utils";
+import { WaitTill, _showErrorMessage, _showPopUpAlert } from "utils";
 import ActionTypes, { action } from "../action-types";
 
 function* _getAppVersion({ type, payload }: action): Generator<any, any, any> {
     try {
-        const response = yield call(ApiProvider._getAppVersion, payload);
-        if (response?.success && !__DEV__ && config.APP_TYPE != 'dev') {
-            if (response.version[`${Platform.OS}Version`] > config.SERVER_APP_VERSION) {
+        const res = yield call(ApiProvider._getAppVersion, payload);
+        if (res?.success && !__DEV__ && config.APP_TYPE != 'dev') {
+            if (res.version[`${Platform.OS}Version`] > config.SERVER_APP_VERSION) {
                 _showPopUpAlert({
                     title: Language.please_update,
                     message: Language.version_update,
@@ -38,21 +38,28 @@ function* _getAppVersion({ type, payload }: action): Generator<any, any, any> {
 }
 
 function* _doLogin({ type, payload }: action): Generator<any, any, any> {
-    ApiProvider.TOKEN_EXPIRED.current = false
-    Database.setMultipleValues({
-        authToken: "abcd",
-        userData: {},
-        isLogin: true
-    })
-    yield put(resetStateOnLogin())
-    return
+
+    yield put(setLoadingAction(true))
+
+    const firebaseToken = Database.getStoredValue('firebaseToken');
+    payload.fcmtoken = firebaseToken
     try {
-        const response = yield call(ApiProvider._doLogin, payload);
-        if (response?.success) {
-
+        const res = yield call(ApiProvider._doLogin, payload);
+        if (res?.success) {
+            const { authtoken, ...userData } = res?.data
+            ApiProvider.TOKEN_EXPIRED.current = false
+            Database.setMultipleValues({
+                authToken: authtoken,
+                userData: userData,
+                isLogin: true
+            })
+            yield put(resetStateOnLogin())
+        } else {
+            _showErrorMessage(res?.message)
         }
-
+        yield put(setLoadingAction(false))
     } catch (e) {
+        yield put(setLoadingAction(false))
         console.log(e);
     }
 }
