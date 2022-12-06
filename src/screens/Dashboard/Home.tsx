@@ -1,96 +1,122 @@
-import { doLogout } from 'app-store/actions'
+import { doLogout, fetchAllPatients } from 'app-store/actions'
 import { colors, Images } from 'assets'
 import { MyHeader, Text } from 'custom-components'
 import { SafeAreaViewWithStatusBar } from 'custom-components/FocusAwareStatusBar'
 import ImageLoader from 'custom-components/ImageLoader'
-import React, { FC, useCallback } from 'react'
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { debounce, isEqual } from 'lodash'
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react'
+import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
-// import RNShake from 'react-native-shake'
-import { useDispatch } from 'react-redux'
+import Entypo from 'react-native-vector-icons/Entypo'
+import { useDispatch, useSelector } from 'react-redux'
 import Language from 'src/language/Language'
-import { NavigationService, scaler, _hidePopUpAlert, _showPopUpAlert } from 'utils'
-
-const chats = [{
-  name: "Danial Swift",
-  profile_image: "https://expertphotography.b-cdn.net/wp-content/uploads/2020/08/social-media-profile-photos-9.jpg",
-  unreadCount: 4,
-  dateOfLastMessage: '28/11/2022',
-}, {
-  name: "Alberto Robin",
-  profile_image: "https://expertphotography.b-cdn.net/wp-content/uploads/2020/08/profile-photos-4.jpg",
-  unreadCount: 3,
-  dateOfLastMessage: '27/11/2022',
-},
-{
-  name: "Alberto Robin",
-  profile_image: "https://expertphotography.b-cdn.net/wp-content/uploads/2020/08/social-media-profiel-photo-venice.jpg",
-  unreadCount: 0,
-  dateOfLastMessage: '27/11/2022',
-}]
-
+import { getChatDateTimeAtHome, NavigationService, parseImageUrl, scaler, _hidePopUpAlert, _showPopUpAlert } from 'utils'
 
 
 const Home: FC = () => {
   const dispatch = useDispatch()
 
+  const [isSearching, setSearching] = useState(false);
+
+  const allPatients = useSelector(state => {
+    return state.patients?.allPatients
+  })
+
+  const searchedPatients = useSelector(state => {
+    return state.patients?.searchedPatients
+  })
+
+  const { searchText } = useSelector(state => ({
+    searchText: state.patients?.searchText,
+  }), isEqual)
+
+  useEffect(() => {
+    dispatch(fetchAllPatients({ fetchAllData: true }))
+  }, [])
+
   const _renderChatItem = useCallback(({ item, index }: { item: any, index: number }) => {
-
-
+    if (item?.total_unread) item.total_unread = parseInt(item?.total_unread)
     return <TouchableOpacity
-      onPress={() => {
-        NavigationService.navigate("NurseChat")
-      }}
-      activeOpacity={0.6} style={{ padding: scaler(15), paddingVertical: scaler(20), width: '100%', flexDirection: 'row', alignItems: 'center' }} >
+      onPress={() => { NavigationService.navigate("NurseChat", { patient: item }) }}
+      activeOpacity={0.6} style={{ padding: scaler(15), paddingVertical: scaler(16), width: '100%', flexDirection: 'row', alignItems: 'center' }} >
       <ImageLoader
-        source={{ uri: item?.profile_image }}
-        style={{
-          height: scaler(40),
-          width: scaler(40),
-          borderRadius: scaler(30),
-          marginRight: scaler(8),
-        }}
+        source={parseImageUrl(item?.patient_photo, item?.chat_room_id)}
+        placeholderSource={Images.ic_profile_placeholder}
+        placeholderStyle={styles.imagePlaceholder}
+        style={styles.image}
         resizeMode={'cover'}
       />
-      <Text ellipsizeMode='tail' type={item?.unreadCount ? 'bold' : 'medium'} style={{ fontSize: scaler(15), color: colors?.colorPrimary, flex: 1, }} >{item?.name}</Text>
-      {item?.unreadCount ? <View style={styles.countView} >
-        <Text type={'medium'} style={{ fontSize: scaler(12), color: colors?.colorWhite, }} >{item?.unreadCount?.toString()}</Text>
+      <Text ellipsizeMode='tail' type={item?.total_unread ? 'extraBold' : 'medium'} style={{ marginLeft: scaler(8), fontSize: scaler(14.5), color: colors?.colorPrimary, flex: 1, }} >{item?.first_name} {item?.last_name || ''}</Text>
+      {item?.total_unread ? <View style={styles.countView} >
+        <Text type={'bold'} style={{ fontSize: scaler(12), color: colors?.colorWhite, }} >{item?.total_unread?.toString()}</Text>
       </View> : null}
-      <Text type={item?.unreadCount ? 'bold' : 'medium'} style={{ fontSize: scaler(12), color: colors?.colorPrimary, }} >{item?.dateOfLastMessage}</Text>
-
+      <Text type={item?.total_unread ? 'extraBold' : 'medium'} style={{ fontSize: scaler(12), color: colors?.colorSecondary, }} >{getChatDateTimeAtHome(item?.created_message_time)}</Text>
     </TouchableOpacity>
-
   }, [],)
+
+  const searchInputRef = useRef<TextInput>(null);
+
+  useEffect(() => {
+    if (isSearching) {
+      setTimeout(() => {
+        searchInputRef?.current?.focus()
+      }, 200);
+    } else {
+      dispatch(fetchAllPatients({ fetchAllData: true }))
+    }
+  }, [isSearching])
+
+  const debounceSearch = useCallback(debounce((text: string) => {
+    dispatch(fetchAllPatients({ fetchAllData: true, searchText: text }))
+  }, 1000), [])
 
 
   return (
     <SafeAreaViewWithStatusBar translucent backgroundColor={'white'} edges={['top']} >
-      <MyHeader
-        leftIcon={Images.ic_app}
-        title={"theDoc " + Language.chat} backEnabled={false}
-        rightIcon={Images.ic_logout}
-        rightIconStyle={{ height: scaler(25), width: scaler(25), }}
-        onPressRight={() => {
-          _showPopUpAlert({
-            title: Language.log_out,
-            message: Language.do_you_want_logout,
-            leftButtonText: Language.no,
-            rightButtonText: Language.yes,
-            onPressLeftButton: _hidePopUpAlert,
-            onPressRightButton: () => {
-              dispatch(doLogout())
-              _hidePopUpAlert()
-            }
-          })
-        }} />
+      {isSearching ?
+        <View style={{ flexDirection: 'row', width: '100%', paddingHorizontal: scaler(15), alignItems: 'center' }} >
+          <TouchableOpacity
+            style={{ marginLeft: -scaler(5), marginRight: scaler(10) }}
+            onPress={() => setSearching(false)} >
+            <Entypo size={scaler(18)} name={'chevron-thin-left'} color={colors.colorBlack} />
+          </TouchableOpacity>
+          <TextInput
+            onChangeText={debounceSearch}
+            ref={searchInputRef}
+            style={styles?.searchInput} />
+        </View>
+        : <MyHeader
+          leftIcon={Images.ic_search}
+          title={"theDoc " + Language.chat} backEnabled={false}
+          rightIcon={Images.ic_logout}
+          leftIconStyle={{ height: scaler(25), width: scaler(25), }}
+          rightIconStyle={{ height: scaler(25), width: scaler(25), }}
+          onPressRight={() => {
+            _showPopUpAlert({
+              title: Language.log_out,
+              message: Language.do_you_want_logout,
+              leftButtonText: Language.no,
+              rightButtonText: Language.yes,
+              onPressLeftButton: _hidePopUpAlert,
+              onPressRightButton: () => {
+                dispatch(doLogout())
+                _hidePopUpAlert()
+              }
+            })
+          }}
+          onPressLeft={() => setSearching(true)}
+        />}
+      <View style={{ height: 1, alignSelf: 'center', width: '100%', backgroundColor: '#d8deeb' }} />
       <View style={styles.container} >
-
         <FlatList
           style={{ flex: 1 }}
-          data={chats}
+          data={isSearching && searchText ? searchedPatients : allPatients}
           keyExtractor={(_, i) => i?.toString()}
           renderItem={_renderChatItem}
-          ItemSeparatorComponent={() => <View style={{ height: 0.7, width: '100%', backgroundColor: colors.colorGreyMore }} />}
+          onEndReached={() => {
+            dispatch(fetchAllPatients({ searchText: searchText }))
+          }}
+          ItemSeparatorComponent={() => <View style={{ height: 1, alignSelf: 'center', width: '90%', backgroundColor: '#d8deeb' }} />}
         />
 
       </View>
@@ -103,7 +129,7 @@ export default Home;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.colorContainer,
+    backgroundColor: colors.colorWhite,
     overflow: 'hidden',
   },
   headerContainer: {
@@ -124,24 +150,23 @@ const styles = StyleSheet.create({
     // justifyContent: 'flex-end'
   },
   searchInput: {
-    height: scaler(40),
-    backgroundColor: colors.colorBackground,
-    borderRadius: scaler(10),
-    paddingHorizontal: scaler(45),
-    paddingVertical: 0,
-    marginVertical: 0,
-    // marginTop: scaler(0),
-    marginHorizontal: scaler(20),
-    fontSize: scaler(11),
-    fontWeight: '300',
-    color: colors.colorBlackText,
+    paddingHorizontal: scaler(15),
+    borderRadius: scaler(5),
+    height: scaler(35),
+    marginVertical: scaler(10),
+    flex: 1,
+    backgroundColor: colors.colorThemeBackground
   },
   imagePlaceholder: {
-    height: scaler(20),
-    position: 'absolute',
-    top: scaler(10),
-    left: scaler(25),
-    resizeMode: 'contain',
+    height: scaler(60),
+    width: scaler(60),
+    borderRadius: scaler(30),
+    tintColor: colors.colorPrimary,
+  },
+  image: {
+    height: scaler(50),
+    width: scaler(50),
+    borderRadius: scaler(25),
   },
   fabActionContainer: {
     borderRadius: scaler(10),
@@ -155,7 +180,7 @@ const styles = StyleSheet.create({
     height: scaler(20),
     width: scaler(20),
     borderRadius: scaler(11),
-    backgroundColor: colors.colorPrimary,
+    backgroundColor: colors.colorErrorRed,
     marginHorizontal: scaler(10),
     alignItems: 'center',
     justifyContent: 'center',

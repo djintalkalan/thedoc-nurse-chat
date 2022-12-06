@@ -13,13 +13,14 @@ interface ChatInputProps {
     onPressSend: () => void;
     value?: string;
     disabled: boolean
+    chat_room_id: string
 }
 
 
 const ChatInput = forwardRef<TextInput, ChatInputProps>((props, ref: ForwardedRef<TextInput>) => {
-    const { onChange, onPressSend, value, disabled } = props
+    const { onChange, onPressSend, value, disabled, chat_room_id } = props
 
-    const [onPickAttachment] = useAttachmentUtilities()
+    const [onPickAttachment] = useAttachmentUtilities(chat_room_id)
     const [pickImage] = useProfileImageUtilities()
 
     return (

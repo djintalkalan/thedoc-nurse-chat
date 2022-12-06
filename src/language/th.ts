@@ -452,6 +452,12 @@ export const th = {
     password: 'รหัสผ่าน',
     sign_in: 'เข้าสู่ระบบ',
     do_you_want_logout: 'คุณต้องการออกจากระบบหรือไม่?',
+    sent_on: 'ส่งเมื่อ',
+    read_on: 'อ่านต่อ',
+    profile_details: 'รายละเอียดโปรไฟล์',
+    about: 'เกี่ยวกับ',
+    age: 'อายุ',
+    preferred_language: 'ภาษาที่ต้องการ',
 
 
 

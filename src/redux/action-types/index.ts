@@ -1,15 +1,13 @@
 
 import authTypes from './authTypes';
 import chatTypes from './chatTypes';
-import homeTypes from './homeTypes';
 import otherTypes from './otherTypes';
-import userTypes from './userTypes';
+import patientTypes from './patientTypes';
 
 const ActionTypes = {
-  ...userTypes,
   ...otherTypes,
   ...authTypes,
-  ...homeTypes,
+  ...patientTypes,
   ...chatTypes,
 }
 export interface action {

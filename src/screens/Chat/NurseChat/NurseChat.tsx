@@ -1,5 +1,6 @@
 import { useIsFocused } from '@react-navigation/native';
-import { getPatientChat, setUnreadMessages } from 'app-store/actions';
+import { getPatientChat, markReadMessages } from 'app-store/actions';
+import { store } from 'app-store/index';
 import { colors } from 'assets/Colors';
 import { Images } from 'assets/Images';
 import { MyHeader, Text, useKeyboardService } from 'custom-components';
@@ -11,14 +12,16 @@ import { Bar } from 'react-native-progress';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
 import Language from 'src/language/Language';
-import { EMIT_READ_MESSAGE, EMIT_SEND_PERSONAL_MESSAGE, SocketService } from 'src/socket';
-import { getChatDateTime, scaler } from 'utils';
+import { EMIT_GET_MISSING_MESSAGES, EMIT_READ_MESSAGE, EMIT_SEND_PERSONAL_MESSAGE, SocketService } from 'src/socket';
+import { getChatDateTime, NavigationService, scaler } from 'utils';
 import ChatInput from '../ChatInput';
 import ChatItem from '../ChatItem';
 
 let loadMore = false
 const { width } = Dimensions.get('screen')
-const NurseChat: FC<any> = () => {
+const NurseChat: FC<any> = (props: any) => {
+    const patient = props?.route?.params?.patient
+    const patientName = patient?.first_name + (patient?.last_name ? " " + patient?.last_name : "")
     const textMessageRef = useRef("")
     const flatListRef = useRef<FlatList>(null);
     const inputRef = useRef<TextInput>(null);
@@ -28,7 +31,7 @@ const NurseChat: FC<any> = () => {
     const { bottom } = useSafeAreaInsets()
     const { keyboardHeight, isKeyboard } = useKeyboardService();
     const { chats } = useSelector(state => ({
-        chats: [],
+        chats: state?.patientChat?.chatRooms?.[patient?.chat_room_id]?.chats,
     }))
     const isFocused = useIsFocused()
     const dispatch = useDispatch()
@@ -36,21 +39,26 @@ const NurseChat: FC<any> = () => {
 
     useEffect(() => {
         if (!socketConnectionRef?.current && socketConnected) {
-            dispatch(getPatientChat({
-                id: userData?.patient_id,
-                setChatLoader: chats?.length ? null : setChatLoader,
-                isMissing: true
-            }))
+            const id = store?.getState()?.patientChat?.chatRooms?.[patient?.chat_room_id]?.chats?.[0]?.id
+            SocketService.emit(EMIT_GET_MISSING_MESSAGES, {
+                chat_room_id: patient?.chat_room_id,
+                last_read_message_id: id
+            })
+            // dispatch(getPatientChat({
+            //     id: patient?.chat_room_id,
+            //     setChatLoader: chats?.length ? null : setChatLoader,
+            //     isMissing: true
+            // }))
         }
         socketConnectionRef.current = socketConnected;
     }, [socketConnected])
 
 
     useEffect(() => {
-        // dispatch(getPatientChat({
-        //     id: userData?.patient_id,
-        //     setChatLoader: chats?.length ? null : setChatLoader,
-        // }))
+        dispatch(getPatientChat({
+            chat_room_id: patient?.chat_room_id,
+            setChatLoader: chats?.length ? null : setChatLoader,
+        }))
         setTimeout(() => {
             loadMore = true
         }, 200);
@@ -63,10 +71,12 @@ const NurseChat: FC<any> = () => {
                 const lastMessage = chats[0]
                 console.log("lastMessage", lastMessage);
                 SocketService.emit(EMIT_READ_MESSAGE, {
-                    chat_room_id: userData?.patient_id,
+                    chat_room_id: patient?.chat_room_id,
                     last_read_message_id: lastMessage?.id,
                 })
-                dispatch(setUnreadMessages(0))
+                dispatch(markReadMessages({
+                    chat_room_id: patient?.chat_room_id
+                }))
             }
         }, 500);
 
@@ -75,7 +85,7 @@ const NurseChat: FC<any> = () => {
     const _onPressSend = useCallback(() => {
         if (textMessageRef?.current?.trim()) {
             SocketService.emit(EMIT_SEND_PERSONAL_MESSAGE, {
-                chat_room_id: userData?.patient_id,
+                chat_room_id: patient?.chat_room_id,
                 message_type: 'text',
                 text: textMessageRef?.current?.trim()
             })
@@ -92,22 +102,31 @@ const NurseChat: FC<any> = () => {
     }, [userData])
 
     const _renderChatItem = useCallback(({ item, index }: any) => {
-        let dateTime = getChatDateTime(item?.created_at)
+        const dateTime = getChatDateTime(item?.created_at)
+        const patientReadOnDate = item?.patient_read_on && getChatDateTime(item?.patient_read_on)
         return <ChatItem
             message={item?.text}
             messageType={item?.message_type}
-            myMessage={item?.User?.patient_id && item?.User?.patient_id != '0'}
+            myMessage={!(item?.User?.patient_id && item?.User?.patient_id != '0')}
             imageUrl={item?.image}
             docUrl={item?.file}
             date={dateTime}
+            patientReadOnDate={patientReadOnDate}
             originalFileName={item?.original_file_name}
+            patientName={patientName}
         />
     }, [])
 
     return (
         <SafeAreaViewWithStatusBar edges={['bottom', 'top']}>
             <View style={styles.container}>
-                <MyHeader title={Language.nurse_chat} rightIcon={Images.ic_app} />
+                <MyHeader title={patientName}
+                    rightIcon={Images.ic_info}
+                    rightIconStyle={{ height: scaler(30), width: scaler(30), }}
+                    onPressRight={() => {
+                        NavigationService.navigate("PatientDetail", { patient })
+                    }}
+                />
                 <View style={styles.mainView}>
 
                     <View style={{ flexShrink: 1 }} >
@@ -134,7 +153,7 @@ const NurseChat: FC<any> = () => {
                                     console.log("End", chats[chats.length - 1]?.id);
                                     loadMore = false
                                     dispatch(getPatientChat({
-                                        id: userData?.patient_id,
+                                        chat_room_id: patient?.chat_room_id,
                                         last_chat_id: chats[chats.length - 1]?.id,
                                         setChatLoader: setChatLoader,
                                     }))
@@ -155,6 +174,7 @@ const NurseChat: FC<any> = () => {
                     ref={inputRef}
                     disabled={!socketConnected}
                     onPressSend={_onPressSend}
+                    chat_room_id={patient?.chat_room_id}
                     onChange={(e: string) => textMessageRef.current = e}
                 />
                 {!socketConnected ? <View style={{ paddingVertical: scaler(4), paddingHorizontal: scaler(10), backgroundColor: colors.colorRed }} >

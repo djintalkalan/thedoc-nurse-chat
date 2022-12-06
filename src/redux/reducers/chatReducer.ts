@@ -31,6 +31,9 @@ export const patientChatReducer = (state: IPatientChatReducer = initialPatientCh
             if (action?.payload?.message_id) {
                 newState.chatRooms[chatRoomUserId].chats = unionBy(newState.chatRooms[chatRoomUserId]?.chats, action?.payload?.chats, "id")
             } else newState.chatRooms[chatRoomUserId].chats = unionBy(action?.payload?.chats, newState.chatRooms[chatRoomUserId]?.chats, "id")
+            console.log("action", action);
+            console.log("newState", newState);
+
             return newState
         case ActionTypes.REFRESH_CHAT_IN_PATIENT:
             const refreshChatState = { ...state }
@@ -41,7 +44,7 @@ export const patientChatReducer = (state: IPatientChatReducer = initialPatientCh
             }
             refreshChatState.chatRooms[chatRoomUserId].chats = action?.payload?.chats
             return refreshChatState
-        // case ActionTypes.ADD_CHAT_IN_PATIENT:s
+        // case ActionTypes.ADD_CHAT_IN_PATIENT:
         //     const addChatState = { ...state }
         //     if (!addChatState.chatRooms[chatRoomUserId]) {
         //         addChatState.chatRooms[chatRoomUserId].chats = []

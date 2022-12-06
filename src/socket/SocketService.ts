@@ -1,12 +1,11 @@
 import { config } from "api";
-import { store } from "app-store";
-import { setChatInPatient, setUnreadMessages } from "app-store/actions";
+import { increaseUnreadMessage, setChatInPatient } from "app-store/actions";
 import Database from "database";
 import { Dispatch } from "react";
 import { io, ManagerOptions, Socket, SocketOptions } from "socket.io-client";
 import { DefaultLanguage, LanguageType } from "src/language/Language";
 import { NavigationService } from "utils";
-import { EMIT_JOIN, ON_CONNECT, ON_CONNECTION, ON_DISCONNECT, ON_JOIN, ON_JOIN_ROOM, ON_LEAVE_ROOM, ON_PERSONAL_MESSAGE, ON_READ_MESSAGE, ON_RECONNECT } from "./SocketEvents";
+import { EMIT_JOIN_ROOMS_AS_NURSE, ON_CONNECT, ON_CONNECTION, ON_DISCONNECT, ON_GET_MISSING_MESSAGES, ON_JOIN, ON_JOIN_ROOM, ON_LEAVE_ROOM, ON_PATIENT_READ_MESSAGE, ON_PERSONAL_MESSAGE, ON_READ_MESSAGE, ON_RECONNECT } from "./SocketEvents";
 
 class Service {
     static instance?: Service;
@@ -88,6 +87,8 @@ class Service {
         this.socket?.on(ON_LEAVE_ROOM, this.onLeaveRoom)
         this.socket?.on(ON_PERSONAL_MESSAGE, this.onPersonalMessage)
         this.socket?.on(ON_READ_MESSAGE, this.onReadMessage)
+        this.socket?.on(ON_PATIENT_READ_MESSAGE, this.onPatientReadMessage)
+        this.socket?.on(ON_GET_MISSING_MESSAGES, this.onMissingPersonalMessage)
 
 
         this.listenErrors();
@@ -113,7 +114,7 @@ class Service {
 
     private onConnection = (e: any) => {
         console.log("Connection Successful", e)
-        this.emit(EMIT_JOIN)
+        this.emit(EMIT_JOIN_ROOMS_AS_NURSE)
         Database.setSocketConnected(true);
     }
 
@@ -126,24 +127,56 @@ class Service {
         // this.emit(EMIT_JOIN)
     }
 
+    private onMissingPersonalMessage = (e: any) => {
+        console.log('onMissingPersonalMessage', e);
+        if (e?.status == 200 && e?.data?.length) {
+            const data: any[] = e?.data
+            this.dispatch(setChatInPatient({
+                chatRoomUserId: data?.[0]?.chat_room_id,
+                chats: data?.reverse(),
+            }))
+        }
+    }
+
     private onPersonalMessage = (e: any) => {
         console.log('onPersonalMessage', e);
-        if (e?.data) {
+        if (e?.status == 200 && e?.data) {
             const data = e?.data
-            const user = e?.data?.user
             this.dispatch(setChatInPatient({
                 chatRoomUserId: data?.chat_room_id,
                 chats: [data]
             }))
-            if (NavigationService.getCurrentScreen()?.name != 'NurseChat') {
-                const oldCount = store.getState()?.homeInfo?.unreadMessages || 0
-                this.dispatch(setUnreadMessages(parseInt(oldCount) + 1))
+            const currentScreen = NavigationService.getCurrentScreen()
+            console.log("currentScreen", currentScreen);
+
+            if (currentScreen?.name != 'NurseChat' || currentScreen?.params?.patient?.chat_room_id != e?.data?.chat_room_id) {
+
+                // const index = store.getState()?.patients?.allPatients?.findIndex(_ => {
+                //    return _?.chat_room_id == e?.data?.chat_room_id
+                // })
+                //     ?.unreadMessages || 0
+                console.log("updating", e?.data?.chat_room_id);
+
+                this.dispatch(increaseUnreadMessage({
+                    chat_room_id: e?.data?.chat_room_id,
+                    created_at: e?.data?.created_at
+                }));
             }
 
         }
     }
     private onReadMessage = (e: any) => {
-        console.log('onReadMessage', e);
+        // console.log('onReadMessage', e);
+    }
+
+    private onPatientReadMessage = (e: any) => {
+        console.log('onPatientReadMessage', e);
+        if (e?.status == 200 && e?.data?.length) {
+            this.dispatch(setChatInPatient({
+                chatRoomUserId: e?.data?.[0]?.chat_room_id,
+                chats: e?.data
+            }))
+        }
     }
 
     private onDisconnect = (reason: Socket.DisconnectReason) => {

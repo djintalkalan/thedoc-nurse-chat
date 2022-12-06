@@ -9,6 +9,7 @@ interface ICardProps {
     useCompatPadding?: boolean
     style?: ViewStyle | Array<ViewStyle>
     onPress?: (e: any) => void
+    children?: any
 }
 
 export const Card: React.FC<ICardProps> = (props) => {

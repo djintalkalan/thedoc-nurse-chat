@@ -3,7 +3,7 @@ export const CONNECTION = 'connection';
 // EMITTER FOR client to server
 //Common Events
 export const EMIT_DISCONNECT = 'disconnect';
-export const EMIT_JOIN = 'join';
+export const EMIT_JOIN_ROOMS_AS_NURSE = 'joinRoomAsNurse';
 export const EMIT_LEAVE_ROOM = "leaveRoom";
 export const EMIT_JOIN_ROOM = "joinRoom";
 export const EMIT_LIKE_UNLIKE = 'likeUnlike';
@@ -14,6 +14,7 @@ export const EMIT_SET_CHAT_BACKGROUND = 'setBackgroundColor'
 export const EMIT_SEND_PERSONAL_MESSAGE = 'sendMessage';
 export const EMIT_JOIN_PERSONAL_ROOM = 'joinOneToOneRoom';
 export const EMIT_READ_MESSAGE = 'readMessages';
+export const EMIT_GET_MISSING_MESSAGES = 'undeliveredMessages';
 
 /********************************************************************************************************/
 /********************************************************************************************************/
@@ -41,4 +42,6 @@ export const ON_SET_CHAT_BACKGROUND = 'onSetBackgroundColor'
 // PERSONAL Messages Events
 export const ON_PERSONAL_MESSAGE = 'onMessage';
 export const ON_READ_MESSAGE = 'onReadMessages'
+export const ON_PATIENT_READ_MESSAGE = 'onPatientReadMessage'
 export const ON_PERSONAL_JOIN_ROOM_REQUEST = 'onJoinOneToOneRoom';
+export const ON_GET_MISSING_MESSAGES = 'onUndeliveredMessages';

@@ -1,7 +1,8 @@
 
 import * as Reducers from 'app-store/reducers';
+import { IPatientChatReducer, IPatientReducer } from 'app-store/reducers';
 import { rootSaga } from "app-store/saga";
-import { DefaultRootState } from 'react-redux';
+import { DefaultRootState, EqualityFn } from 'react-redux';
 import { applyMiddleware, combineReducers, createStore, Store } from "redux";
 import { Persistor, persistReducer, persistStore } from 'redux-persist';
 import createSagaMiddleware from 'redux-saga';
@@ -11,7 +12,11 @@ declare module 'react-redux' {
     interface DefaultRootState {
         isLoading: boolean
         loadingMsg: string
+        patients: IPatientReducer
+        patientChat: IPatientChatReducer
     }
+
+    function useSelector<TState = DefaultRootState, Selected = unknown>(selector: (state: TState) => Selected, equalityFn?: EqualityFn<Selected> | undefined): Selected;
 }
 
 declare module 'redux-saga/effects' {
@@ -32,7 +37,7 @@ const persistConfig = {
     // storage: AsyncStorage // 
     // Whitelist (Save Specific Reducers)
     whitelist: PERSIST_ENABLED ? [
-
+        'patients'
     ] : [],
     blacklist: [],
     throttle: 1000,
@@ -42,6 +47,8 @@ const persistConfig = {
 const rootReducer = combineReducers({
     isLoading: Reducers.isLoadingReducer,
     loadingMsg: Reducers.loadingMsgReducer,
+    patients: Reducers.patientReducer,
+    patientChat: Reducers.patientChatReducer
 });
 
 const persistedReducer = mergeStorageInPersistedReducer(persistReducer, persistConfig, rootReducer);

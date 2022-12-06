@@ -453,5 +453,11 @@ export const en = {
     password: 'Password',
     sign_in: 'Sign In',
     do_you_want_logout: 'Do you want to logout?',
+    sent_on: 'Sent on',
+    read_on: 'Read on',
+    profile_details: 'Profile Details',
+    about: 'About',
+    age: 'Age',
+    preferred_language: 'Preferred Language',
 
 }

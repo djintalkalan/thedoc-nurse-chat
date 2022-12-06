@@ -12,6 +12,7 @@ interface MyHeaderProps {
     leftText?: string
     leftIcon?: ImageURISource,
     rightIcon?: ImageURISource,
+    leftIconStyle?: StyleProp<ImageStyle>
     rightIconStyle?: StyleProp<ImageStyle>
     onPressLeft?: (e?: GestureResponderEvent) => void
     onPressRight?: (e?: GestureResponderEvent) => void
@@ -32,7 +33,7 @@ export const MyHeader: FC<MyHeaderProps> = (props) => {
         [isKeyboard, props?.onPress, props?.isWebView],
     )
 
-    const { backEnabled = true, title, onPressRight, rightIcon, onPressLeft, rightText, leftText, leftIcon, rightIconStyle } = props
+    const { backEnabled = true, title, onPressRight, rightIcon, onPressLeft, rightText, leftText, leftIcon, rightIconStyle, leftIconStyle } = props
 
     const styles = StyleSheet.create({
         textStyle: {
@@ -70,7 +71,7 @@ export const MyHeader: FC<MyHeaderProps> = (props) => {
             width: scaler(36),
             resizeMode: 'contain',
             // aspectRatio: scaler(130) / scaler(50),
-            // ...StyleSheet.flatten(rightIconStyle)
+            ...StyleSheet.flatten(leftIconStyle)
         },
         rightIconStyle: {
             height: scaler(42),

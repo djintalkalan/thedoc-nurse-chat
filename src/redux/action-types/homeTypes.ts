@@ -1,7 +1,0 @@
-const homeTypes = {
-    REFRESH_HOME_SCREEN: "REFRESH_HOME_SCREEN",
-    GET_UNREAD_MESSAGES: "GET_UNREAD_MESSAGES",
-    SET_UNREAD_MESSAGES: "SET_UNREAD_MESSAGES",
-}
-
-export default homeTypes;

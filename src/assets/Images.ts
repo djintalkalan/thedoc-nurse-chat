@@ -16,6 +16,8 @@ export const Images = {
   ic_gallery_icon: MaterialIcons.getImageSourceSync('photo-library', 50, colors.colorPrimary),
   ic_file_icon: MaterialIcons.getImageSourceSync('picture-as-pdf', 30, colors.colorPrimary),
   ic_lock: MaterialIcons.getImageSourceSync('lock-outline', 30, colors.colorPrimary),
+  ic_info: MaterialIcons.getImageSourceSync('info-outline', 30, colors.colorPrimary),
+  ic_search: MaterialIcons.getImageSourceSync('search', 30, colors.colorPrimary),
   ic_get_started: require("./images/ic_get_started.png"),
   ic_translation: require("./images/ic_translate.png"),
   ic_eng: require("./images/ic_eng.png"),

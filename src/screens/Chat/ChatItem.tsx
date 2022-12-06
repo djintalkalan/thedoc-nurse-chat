@@ -16,14 +16,15 @@ interface ChatItemProps {
     docUrl?: string
     date?: string
     originalFileName?: string
+    patientName: string
+    patientReadOnDate: string
 }
 const ChatItem = (props: ChatItemProps) => {
-    const { message, myMessage, messageType, imageUrl, docUrl, date, originalFileName } = props
-
+    const { message, myMessage, messageType, imageUrl, docUrl, date, originalFileName, patientName, patientReadOnDate } = props
 
     return (
         <View style={{}}>
-            <Text style={myMessage ? styles.textStyle : [styles.textStyle, { alignSelf: "flex-start" }]} type='medium'>{myMessage ? Language.you : Language.nurse}</Text>
+            <Text style={myMessage ? styles.textStyle : [styles.textStyle, { alignSelf: "flex-start" }]} type='medium'>{myMessage ? Language.you : patientName}</Text>
             <View style={myMessage ? styles.chatContainer : [styles.chatContainer, { alignSelf: 'flex-start', backgroundColor: colors.colorSecondary }]}>
                 {messageType == 'text' ?
                     <Text type='medium' style={styles.chatText}>{message}</Text>
@@ -43,7 +44,10 @@ const ChatItem = (props: ChatItemProps) => {
                             <Image source={Images.ic_chat_doc} style={styles.chatDoc} />
                             <Text numberOfLines={2} ellipsizeMode={'tail'} type='medium' style={[styles.chatText, { fontSize: scaler(13) }]}>{originalFileName || docUrl}</Text>
                         </TouchableOpacity>}
-                <Text type='medium' style={[styles.chatText, { fontSize: scaler(10), alignSelf: myMessage ? 'flex-end' : 'flex-start', marginTop: scaler(5) }]}>{date}</Text>
+                <View style={{ alignSelf: myMessage ? 'flex-end' : 'flex-start', }} >
+                    <Text type='medium' style={[styles.chatText, { fontSize: scaler(9), marginTop: scaler(5) }]}>{Language.sent_on} {date}</Text>
+                    {myMessage && patientReadOnDate && <Text type='medium' style={[styles.chatText, { fontSize: scaler(9), marginTop: scaler(5) }]}>{Language.read_on} {patientReadOnDate}</Text>}
+                </View>
             </View>
         </View>
     )

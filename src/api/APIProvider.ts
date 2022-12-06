@@ -21,7 +21,7 @@ interface header {
 }
 
 interface IApiResponse {
-  status: number
+  success: boolean
   message?: string
   data?: any
   [key: string]: any
@@ -187,9 +187,9 @@ export const _doLogin = async (body: any) => {
   return fetchApiData('nurse/login', "POST", body)
 }
 
-export const _getChatList = async (body: string) => {
-  console.log("----------_doLogin Api Call ---------------")
-  return fetchApiData('nurse/chat-listing/?search=', "POST", body)
+export const _fetchAllPatients = async (body: any) => {
+  console.log("----------Fetch all chats Api Call ---------------")
+  return fetchApiData('nurse/chat-listing?' + (new URLSearchParams(body)).toString(), "GET")
 }
 
 export const _getAppVersion = async () => {
@@ -199,12 +199,18 @@ export const _getAppVersion = async () => {
 
 export const _getPatientChat = async (body: any) => {
   console.log("---------- _getPatientChat Api Call ---------------")
-  return fetchApiData('patient/chat-list', "POST", body)
+  return fetchApiData('nurse/chat-detail?' + (new URLSearchParams(body)).toString(), "GET")
 }
 
 export const _getUnreadMsgCount = async () => {
   console.log("---------- _getUnreadMsgCount Api Call ---------------")
   return fetchApiData('patient/get-unread-count', "GET")
 }
+
+export const _getPatientDetail = async (body: string) => {
+  console.log("---------- _getPatientDetail Api Call ---------------")
+  return fetchApiData('nurse/patient-detail/' + body, "GET")
+}
+
 
 

@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, ColorValue, GestureResponderEvent, Image, StyleProp, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ColorValue, GestureResponderEvent, Image, ImageStyle as RNImageStyle, StyleProp, StyleSheet, TouchableOpacity, View } from 'react-native';
 import FastImage, { ImageStyle, ResizeMode, Source } from 'react-native-fast-image';
 
 
 interface IImageLoader {
     isShowActivity?: boolean,
-    style?: StyleProp<ImageStyle>,
+    style?: StyleProp<ImageStyle | RNImageStyle>,
     source: Source | null | undefined,
     resizeMode?: ResizeMode
     borderRadius?: number
@@ -13,7 +13,7 @@ interface IImageLoader {
     children?: any
     loadingStyle?: any
     placeholderSource?: any
-    placeholderStyle?: StyleProp<ImageStyle>
+    placeholderStyle?: StyleProp<ImageStyle | RNImageStyle>
     customImagePlaceholderDefaultStyle?: any
     reload?: boolean
     onPress?: (e?: GestureResponderEvent) => void
@@ -100,7 +100,7 @@ const ImageLoader = (props: IImageLoader) => {
             <FastImage
                 key={currentRetry.current}
                 source={source ?? { uri: "" }}
-                style={styles.mainStyle}
+                style={styles.mainStyle as ImageStyle}
                 onLoadEnd={onLoadEnd}
                 onError={onError}
                 onLoadStart={onLoadStart}

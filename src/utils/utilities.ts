@@ -1,9 +1,10 @@
 
+import { config } from 'api';
 import { colors } from 'assets';
 import { IBottomMenu } from 'custom-components/BottomMenu';
 import { IAlertType } from 'custom-components/PopupAlert';
 import { TouchAlertType } from 'custom-components/TouchAlert';
-import { format as FNSFormat } from 'date-fns';
+import { format as FNSFormat, sub } from 'date-fns';
 import moment from 'moment-timezone';
 import { Keyboard, Linking } from 'react-native';
 import InAppBrowser from 'react-native-inappbrowser-reborn';
@@ -443,4 +444,44 @@ export const getChatDateTime = (time: string) => {
     }
     return dateTime
 
+}
+
+const todayDateStringInSpecificZone = dateFormatInSpecificZone(new Date(), "YYYYMMDD")
+const yesterdayDateStringInSpecificZone = dateFormatInSpecificZone(sub(new Date(), { days: 1 }), "YYYYMMDD")
+const todayYearInSpecificZone = dateFormatInSpecificZone(new Date(), "YYYY")
+
+export const getChatDateTimeAtHome = (time: string) => {
+    let dateTime = ''
+    if (dateFormat(new Date(time), "YYYYMMDD") == todayDateStringInSpecificZone) {
+        dateTime = dateFormat(new Date(time), "hh:mm A")
+    }
+    else {
+        let date = new Date()
+        date.setDate(date.getDate() - 1)
+        if (dateFormat(new Date(time), "YYYYMMDD") == yesterdayDateStringInSpecificZone) {
+            dateTime = Language.yesterday + ', ' + dateFormat(new Date(time), "hh:mm A")
+        }
+        else {
+            const format = todayYearInSpecificZone == dateFormat(new Date(time), "YYYY") ? 'DD MMM, hh:mm A' : 'DD MMM, YYYY'
+            dateTime = dateFormat(new Date(time), format)
+        }
+    }
+    return dateTime
+
+}
+
+export const parseImageUrl = (image: string, patient_id: any) => {
+    if (image?.trim()) {
+        return { uri: `${config.BASE_URL}uploads/patient/${patient_id}/profile_pics/thumb_${image}` }
+    }
+}
+
+export const getGender = (gender: string) => {
+    if (gender?.toLowerCase() == 'm') {
+        return Language.male
+    }
+    if (gender?.toLowerCase() == 'f') {
+        return Language.female
+    }
+    return gender
 }

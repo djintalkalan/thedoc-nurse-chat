@@ -19,6 +19,8 @@ import { useLanguage } from 'src/language/Language';
 import Login from 'screens/Auth/Login';
 import NurseChat from 'screens/Chat/NurseChat/NurseChat';
 import Home from 'screens/Dashboard/Home';
+import DocumentViewer from 'screens/DocumentViewer/DocumentViewer';
+import PatientDetail from 'screens/PatientDetail';
 import { useLocalAuthentication } from 'src/LocalAuthentication';
 import { SocketService } from 'src/socket/SocketService';
 import { NavigationService } from 'utils';
@@ -36,6 +38,8 @@ const authScreens = {
 const dashboardScreens = {
   Home,
   NurseChat,
+  DocumentViewer,
+  PatientDetail,
 };
 
 const getScreenOptions = (name: string): NativeStackNavigationOptions | undefined => {

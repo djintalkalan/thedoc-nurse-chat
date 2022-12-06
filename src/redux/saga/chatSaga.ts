@@ -6,14 +6,14 @@ import { _showErrorMessage } from "utils";
 import ActionTypes, { action } from "../action-types";
 
 function* _getPatientChat({ type, payload, }: action): Generator<any, any, any> {
-    const { id, setChatLoader, isMissing = false, ...rest } = payload
+    const { setChatLoader, ...rest } = payload
     setChatLoader && setChatLoader(true)
     try {
         let res = yield call(ApiProvider._getPatientChat, rest);
         if (res.success) {
             const chats = res?.chatList
             // return
-            yield put((payload?.last_chat_id || isMissing ? setChatInPatient : refreshChatInPatient)({ chatRoomUserId: id, chats: chats, message_id: payload?.last_chat_id }))
+            yield put((payload?.last_chat_id ? setChatInPatient : refreshChatInPatient)({ chatRoomUserId: rest?.chat_room_id, chats: chats, message_id: payload?.last_chat_id }))
         } else if (res.status == 400) {
             _showErrorMessage(res.message);
         } else {

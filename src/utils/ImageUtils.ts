@@ -1,4 +1,4 @@
-import { uploadFile, uploadProfileImage } from "app-store/actions";
+import { uploadFile } from "app-store/actions";
 import { colors } from "assets/Colors";
 import { Fonts } from "assets/Fonts";
 import { Images } from "assets/Images";
@@ -169,7 +169,7 @@ export const useProfileImageUtilities = () => {
     const openCamera = useCallback(async () => {
         const image = await requestCameraPermission(PROFILE_IMAGE_OPTIONS)
         if (image) {
-            dispatch(uploadProfileImage(image))
+            // dispatch(uploadProfileImage(image))
         }
         console.log("CAMERA_IMAGE", image);
 
@@ -178,7 +178,7 @@ export const useProfileImageUtilities = () => {
     const openGallery = useCallback(async () => {
         const image = await selectFile(2, PROFILE_IMAGE_OPTIONS)
         if (image) {
-            dispatch(uploadProfileImage(image))
+            // dispatch(uploadProfileImage(image))
         }
         console.log("GALLERY_IMAGE", image);
     }, [])
@@ -206,7 +206,7 @@ export const useProfileImageUtilities = () => {
     return [pickImage, openCamera, openGallery]
 }
 type UseAttachmentResult = [(e?: GestureResponderEvent) => void, (data: any, prefix: string, originalName: string) => void]
-export const useAttachmentUtilities = (): UseAttachmentResult => {
+export const useAttachmentUtilities = (chat_room_id: string): UseAttachmentResult => {
     const dispatch = useDispatch()
     const [userData] = useDatabase('userData')
 
@@ -229,7 +229,7 @@ export const useAttachmentUtilities = (): UseAttachmentResult => {
 
     const onSuccess = useCallback((data: any, prefix: string, originalName: string) => {
         SocketService.emit(EMIT_SEND_PERSONAL_MESSAGE, {
-            chat_room_id: userData?.patient_id,
+            chat_room_id: chat_room_id,
             message_type: prefix == 'photo' ? 'image' : 'file',
             text: '',
             image: prefix == 'photo' ? data : '',
