@@ -102,7 +102,12 @@ const navigateToPages = async (notification: any) => {
         console.log("data is ", data, JSON.stringify(data));
 
         if (data?.message) {
-            NavigationService.closeAndPush('NurseChat')
+            NavigationService.closeAndPush('NurseChat', {
+                patient: {
+                    ...data?.patient?.PatientGeneralInformation,
+                    chat_room_id: data?.patient?.patient_id
+                }
+            })
         }
 
         // if (data?.chat_room_id) {
@@ -139,7 +144,7 @@ const showNotification = async (message: any, isBackground: boolean) => {
         console.log("data is ", messageData);
         notifee.displayNotification({
             body: body?.trim(),
-            title: title.trim() || "theDoc",
+            title: title.trim() || "theDoc Chat",
             data: { title, body, message: (JSON.stringify(messageData || '')) },
             android: {
                 channelId: CHANNEL_NAME,

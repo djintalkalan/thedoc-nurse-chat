@@ -140,6 +140,7 @@ class Service {
 
     private onPersonalMessage = (e: any) => {
         console.log('onPersonalMessage', e);
+        console.log('userdata', Database.getStoredValue('userData'));
         if (e?.status == 200 && e?.data) {
             const data = e?.data
             this.dispatch(setChatInPatient({
@@ -149,20 +150,22 @@ class Service {
             const currentScreen = NavigationService.getCurrentScreen()
             console.log("currentScreen", currentScreen);
 
-            if (currentScreen?.name != 'NurseChat' || currentScreen?.params?.patient?.chat_room_id != e?.data?.chat_room_id) {
+            if (e?.data?.User?.patient_id != 0) {
 
-                // const index = store.getState()?.patients?.allPatients?.findIndex(_ => {
-                //    return _?.chat_room_id == e?.data?.chat_room_id
-                // })
-                //     ?.unreadMessages || 0
-                console.log("updating", e?.data?.chat_room_id);
+                if (currentScreen?.name != 'NurseChat' || currentScreen?.params?.patient?.chat_room_id != e?.data?.chat_room_id) {
 
-                this.dispatch(increaseUnreadMessage({
-                    chat_room_id: e?.data?.chat_room_id,
-                    created_at: e?.data?.created_at
-                }));
+                    // const index = store.getState()?.patients?.allPatients?.findIndex(_ => {
+                    //    return _?.chat_room_id == e?.data?.chat_room_id
+                    // })
+                    //     ?.unreadMessages || 0
+                    console.log("updating", e?.data?.chat_room_id);
+
+                    this.dispatch(increaseUnreadMessage({
+                        chat_room_id: e?.data?.chat_room_id,
+                        created_at: e?.data?.created_at
+                    }));
+                }
             }
-
         }
     }
     private onReadMessage = (e: any) => {

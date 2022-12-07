@@ -34,7 +34,7 @@ export const patientReducer = (state = { ...initialState }, { type, payload }: a
                 }
                 return _
             });
-            if (oldIndex != newIndex)
+            if (oldIndex != newIndex && type == ActionTypes.INCREASE_UNREAD_MESSAGE)
                 allArray?.splice(newIndex, 0, allArray?.splice(oldIndex, 1)[0])
             oldIndex = 0;
             let searchedArray = state?.searchedPatients?.map((_, index) => {
@@ -50,7 +50,7 @@ export const patientReducer = (state = { ...initialState }, { type, payload }: a
                 }
                 return _
             });
-            if (oldIndex != newIndex)
+            if (oldIndex != newIndex && type == ActionTypes.INCREASE_UNREAD_MESSAGE)
                 searchedArray?.splice(newIndex, 0, searchedArray?.splice(oldIndex, 1)[0])
 
             return {

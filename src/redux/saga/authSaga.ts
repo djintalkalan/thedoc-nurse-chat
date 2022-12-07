@@ -1,40 +1,36 @@
-import { config } from 'api';
 import * as ApiProvider from 'api/APIProvider';
 import { resetStateOnLogin, resetStateOnLogout, setLoadingAction, setLoadingMsg, tokenExpired as tokenExpiredAction } from "app-store/actions";
-import { Linking, Platform } from 'react-native';
-import RNExitApp from 'react-native-exit-app';
 import { call, put, takeLatest } from "redux-saga/effects";
 import Database from 'src/database/Database';
-import Language from 'src/language/Language';
-import { WaitTill, _showErrorMessage, _showPopUpAlert } from "utils";
+import { WaitTill, _showErrorMessage } from "utils";
 import ActionTypes, { action } from "../action-types";
 
 function* _getAppVersion({ type, payload }: action): Generator<any, any, any> {
-    try {
-        const res = yield call(ApiProvider._getAppVersion, payload);
-        if (res?.success && !__DEV__ && config.APP_TYPE != 'dev') {
-            if (res.version[`${Platform.OS}Version`] > config.SERVER_APP_VERSION) {
-                _showPopUpAlert({
-                    title: Language.please_update,
-                    message: Language.version_update,
-                    rightButtonText: Language.update,
-                    onPressRightButton: () => {
-                        Linking.openURL(
-                            Platform.OS == 'ios'
-                                ? 'itms-apps://itunes.apple.com/us/app/apple-store/1516209111?mt=8'
-                                : 'https://play.google.com/store/apps/details?id=' + config.BUNDLE_ID_PACKAGE_NAME,
-                        );
-                        setTimeout(() => {
-                            RNExitApp.exitApp();
-                        }, 200);
-                    },
-                })
-            }
-        }
+    // try {
+    //     const res = yield call(ApiProvider._getAppVersion, payload);
+    //     if (res?.success && !__DEV__ && config.APP_TYPE != 'dev') {
+    //         if (res.version[`${Platform.OS}Version`] > config.SERVER_APP_VERSION) {
+    //             _showPopUpAlert({
+    //                 title: Language.please_update,
+    //                 message: Language.version_update,
+    //                 rightButtonText: Language.update,
+    //                 onPressRightButton: () => {
+    //                     Linking.openURL(
+    //                         Platform.OS == 'ios'
+    //                             ? 'itms-apps://itunes.apple.com/us/app/apple-store/1516209111?mt=8'
+    //                             : 'https://play.google.com/store/apps/details?id=' + config.BUNDLE_ID_PACKAGE_NAME,
+    //                     );
+    //                     setTimeout(() => {
+    //                         RNExitApp.exitApp();
+    //                     }, 200);
+    //                 },
+    //             })
+    //         }
+    //     }
 
-    } catch (e) {
-        console.log(e);
-    }
+    // } catch (e) {
+    //     console.log(e);
+    // }
 }
 
 function* _doLogin({ type, payload }: action): Generator<any, any, any> {
