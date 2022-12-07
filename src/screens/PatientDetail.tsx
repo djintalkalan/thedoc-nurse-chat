@@ -55,7 +55,7 @@ const PatientDetail: FC<any> = (props) => {
                 <View style={styles.content} >
                     <Text type='bold' style={styles.about} >{Language.about}</Text>
                     <Card style={styles.card} cornerRadius={scaler(5)}  >
-                        <DataRow title="HN." value={"HN." + patient?.h_number} />
+                        <DataRow title="HN." value={"HN." + (patient?.h_number || '')} />
                         <DataRow title={Language.phone} value={patient?.cell_phone} />
                         <DataRow title={Language.age} value={patient?.age} />
                         <DataRow title={Language.gender} value={getGender(patient?.gender)} />

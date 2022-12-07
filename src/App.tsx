@@ -36,7 +36,7 @@ const App: FC = () => {
     useEffect(() => {
         setTimeout(() => {
             RNBootSplash.hide({ fade: true });
-        }, 2000);
+        }, 1000);
     }, [])
 
 

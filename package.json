@@ -31,10 +31,10 @@
     "postinstall": "(node ./scripts/fix-carousel.js||true)  && (node ./scripts/adv-mmkv.js||true) && (node ./scripts/fix-react-native.js || true) && (node ./scripts/fix-ultimate-config.js || true) && (node ./scripts/fix-compile.js || true) && run-s env-d pod",
     "kill-all": "((pkill -f '.*GradleDaemon.*' || ./android/gradlew gradle --stop) && (rm -rf ~/.gradle/daemon || true))",
     "dl": "/usr/bin/xcrun simctl openurl booted ",
-    "push-a-d": "yarn env-d && appcenter codepush release-react -a thedocshine/the-doc-android -d dev -m --target-binary-version",
-    "push-a-p": "yarn env-p && appcenter codepush release-react -a thedocshine/the-doc-android -d production -m --target-binary-version",
-    "push-i-d": "yarn env-d && appcenter codepush release-react -a thedocshine/the-doc-ios -d dev -m --target-binary-version",
-    "push-i-p": "yarn env-p && appcenter codepush release-react -a thedocshine/the-doc-ios -d production  -m --target-binary-version",
+    "push-a-d": "yarn env-d && appcenter codepush release-react -a thedocshine/nurse-chat-android -d dev -m --target-binary-version",
+    "push-a-p": "yarn env-p && appcenter codepush release-react -a thedocshine/nurse-chat-android -d production -m --target-binary-version",
+    "push-i-d": "yarn env-d && appcenter codepush release-react -a thedocshine/nurse-chat-ios -d dev -m --target-binary-version",
+    "push-i-p": "yarn env-p && appcenter codepush release-react -a thedocshine/nurse-chat-ios -d production  -m --target-binary-version",
     "ipa-d": "run-s env-d clean-ios archive",
     "ipa-b": "run-s env-b clean-ios archive",
     "ipa-p": "run-s env-p clean-ios archive",
@@ -54,7 +54,7 @@
     "generate-ipa-diawi": "xcodebuild -exportArchive -archivePath ios/build/theDoc.xcarchive -exportOptionsPlist ios/theDoc/exportOptionsDiawi.plist -exportPath ios/output/diawi -allowProvisioningUpdates && yarn open-ios-output-folder"
   },
   "dependencies": {
-    "@notifee/react-native": "^7.1.0",
+    "@notifee/react-native": "^7.2.0",
     "@react-native-community/blur": "^4.3.0",
     "@react-native-community/clipboard": "^1.5.1",
     "@react-native-community/datetimepicker": "^6.7.0",
