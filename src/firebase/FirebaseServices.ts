@@ -131,16 +131,16 @@ export const onMessageReceived = async (message: any, isBackground: boolean = fa
 }
 
 const showNotification = async (message: any, isBackground: boolean) => {
+    if (!message?.data?.message) return
     const { name, params } = NavigationService?.getCurrentScreen() ?? {}
-    if (!isBackground && (name == "NurseChat") && message?.data?.message) {
+    let { title, body, message: messageData } = message?.data ?? {};
+    if (messageData && typeof messageData == 'string') {
+        messageData = JSON.parse(messageData)
+    }
+    if (!isBackground && name == "NurseChat" && params?.patient?.chat_room_id == messageData?.patient?.patient_id) {
 
     }
     else {
-        let { title, body, message: messageData } = message?.data ?? {};
-
-        if (messageData && typeof messageData == 'string') {
-            messageData = JSON.parse(messageData)
-        }
         console.log("data is ", messageData);
         notifee.displayNotification({
             body: body?.trim(),
