@@ -176,7 +176,14 @@ class Service {
         }
     }
     private onReadMessage = (e: any) => {
-        // console.log('onReadMessage', e);
+        const currentScreen = NavigationService.getCurrentScreen()
+        console.log('onReadMessage', e);
+        if ((currentScreen?.name != 'NurseChat' || currentScreen?.params?.patient?.chat_room_id != e?.data?.chat_room_id) && e?.data?.user_type != 'patient') {
+            this.dispatch(markReadMessages({
+                chat_room_id: e?.data?.chat_room_id,
+                created_at: e?.data?.created_at
+            }));
+        }
     }
 
     private onPatientReadMessage = (e: any) => {
