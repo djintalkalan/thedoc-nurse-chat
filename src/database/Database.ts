@@ -21,38 +21,6 @@ type DataBaseType = {
     allLanguages?: ILanguages
 }
 
-const retrieveToken = () => {
-    console.log("Retrieving Token");
-
-    GetGenericPasswordFromKeyChain({ service: config.BUNDLE_ID_PACKAGE_NAME }).then((res) => {
-        console.log("RES", res);
-        if (res && res?.service == config.BUNDLE_ID_PACKAGE_NAME && res?.username == config.BUNDLE_ID_PACKAGE_NAME && res?.password) {
-            console.log("uuid is ", res?.password);
-            Database.getInstance()?.setValue('uuid', res?.password)
-            return
-        }
-        console.log("Generating new Token");
-        let newToken = ''
-        try {
-            newToken = uuid?.v4()?.toString();
-        }
-        catch (e) {
-            console.log("Error generating new Token")
-            console.log(e)
-        }
-        console.log("New Token is ", newToken);
-        SetGenericPasswordFromKeyChain(config.BUNDLE_ID_PACKAGE_NAME, newToken, { service: config.BUNDLE_ID_PACKAGE_NAME }).then(res => {
-            Database.getInstance()?.setValue('uuid', newToken)
-        }).catch(e => {
-            console.log("Error setting uuid in the KeyChain")
-            console.log(e)
-        })
-    }).catch(e => {
-        console.log("Error getting uuid from KeyChain")
-        console.log(e)
-    });
-}
-
 class Database {
 
     private static mInstance: Database
@@ -60,9 +28,6 @@ class Database {
     static getInstance = () => {
         if (!this.mInstance) {
             this.mInstance = new Database()
-            const uuid = this.mInstance.getStoredValue('uuid');
-            console.log("uuid is ", uuid);
-            if (!uuid) retrieveToken();
         }
         return this.mInstance
     }
@@ -113,7 +78,6 @@ class Database {
                 return this.languageStorage
             case 'authToken':
             case 'isLogin':
-            case 'authToken':
             case 'userData':
             case 'firebaseToken':
                 return this.userDataStorage
@@ -230,4 +194,45 @@ export const mergeStorageInPersistedReducer = (persistReducer: any, persistConfi
     }, rootReducer)
 }
 
-export default Database.getInstance()
+const DataInstance = Database.getInstance();
+
+export const retrieveToken = async () => {
+    console.log("Retrieving Token");
+    const genericCredentials = await GetGenericPasswordFromKeyChain({ service: config.BUNDLE_ID_PACKAGE_NAME }).catch((e) => {
+        console.log("Error in getting password from KeyChain")
+    })
+
+    if (genericCredentials && genericCredentials?.service == config.BUNDLE_ID_PACKAGE_NAME && genericCredentials?.username == config.BUNDLE_ID_PACKAGE_NAME && genericCredentials?.password) {
+        console.log("uuid is ", genericCredentials?.password);
+        return genericCredentials?.password
+    }
+    console.log("Generating new Token");
+    let newToken = 'tokenNotGenerated'
+    try {
+        newToken = uuid?.v4()?.toString();
+    }
+    catch (e) {
+        console.log("Error generating new Token")
+        console.log(e)
+    }
+    console.log("New Token is ", newToken);
+    await SetGenericPasswordFromKeyChain(config.BUNDLE_ID_PACKAGE_NAME, newToken, { service: config.BUNDLE_ID_PACKAGE_NAME }).catch(e => {
+        console.log("Error setting uuid in the KeyChain")
+        console.log(e)
+    })
+    DataInstance?.setValue('uuid', newToken)
+    return newToken
+
+}
+
+(() => {
+    setTimeout(async () => {
+        let uuid = DataInstance.getStoredValue('uuid');
+        if (!uuid) {
+            uuid = await retrieveToken();
+            DataInstance?.setValue('uuid', uuid)
+        }
+    }, 500);
+})()
+
+export default DataInstance

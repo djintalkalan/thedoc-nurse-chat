@@ -4,9 +4,9 @@ import { store } from 'app-store/store';
 import axios, { AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
 import React, { MutableRefObject } from 'react';
 import { Progress, Request, RNS3 } from 'react-native-aws3';
-import Database from 'src/database/Database';
+import Database, { retrieveToken } from 'src/database/Database';
 import { LanguageType } from 'src/language/Language';
-import { _showErrorMessage, _showErrorMessageParsed } from 'utils';
+import { WaitTill, _showErrorMessage, _showErrorMessageParsed } from 'utils';
 
 
 const FORCE_GET_CONTENT_TYPE_URLS = ['patient/address', 'getLanguage']
@@ -124,12 +124,18 @@ async function fetchApiData(url: string, method?: Method, body?: any) {
   const authToken = Database.getStoredValue('authToken')
   const selectedLanguage = Database.getStoredValue<LanguageType>('selectedLanguage') || "en"
   try {
+    let uuid = Database.getStoredValue('uuid');
+    if (!uuid) {
+      uuid = await retrieveToken();
+      await WaitTill(500);
+      Database?.setValue('uuid', uuid)
+    }
     const header: header = {
       "Content-Type": (isMultipart) ? "multipart/form-data" : "application/json",
       Authorization: authToken ? `Bearer ${authToken}` : '',
       'Accept-Language': selectedLanguage,
       platform: 'nurseapp',
-      uuid: Database.getStoredValue('uuid')
+      uuid
     }
     return callApi(url, header, body, method)
   } catch (error: any) {
@@ -212,5 +218,9 @@ export const _getPatientDetail = async (body: string) => {
   return fetchApiData('nurse/patient-detail/' + body, "GET")
 }
 
+export const _logout = async () => {
+  console.log("---------- _getPatientDetail Api Call ---------------")
+  return fetchApiData('nurse/logout', "POST")
+}
 
 
