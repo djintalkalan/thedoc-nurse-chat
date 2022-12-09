@@ -75,7 +75,8 @@ const NurseChat: FC<any> = (props: any) => {
                     last_read_message_id: lastMessage?.id,
                 })
                 dispatch(markReadMessages({
-                    chat_room_id: patient?.chat_room_id
+                    chat_room_id: patient?.chat_room_id,
+                    created_at: lastMessage?.created_at
                 }))
             }
         }, 500);

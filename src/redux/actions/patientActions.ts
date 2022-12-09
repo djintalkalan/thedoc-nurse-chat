@@ -21,7 +21,7 @@ export const increaseUnreadMessage = (payload: { chat_room_id?: string, created_
     }
 }
 
-export const markReadMessages = (payload: { chat_room_id?: string }): action => {
+export const markReadMessages = (payload: { chat_room_id?: string, created_at: string }): action => {
     return {
         type: ActionTypes.MARK_READ_MESSAGES,
         payload

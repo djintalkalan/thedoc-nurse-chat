@@ -1,5 +1,5 @@
 import { config } from "api";
-import { increaseUnreadMessage, setChatInPatient } from "app-store/actions";
+import { increaseUnreadMessage, markReadMessages, setChatInPatient } from "app-store/actions";
 import Database from "database";
 import { Dispatch } from "react";
 import { io, ManagerOptions, Socket, SocketOptions } from "socket.io-client";
@@ -161,6 +161,13 @@ class Service {
                     console.log("updating", e?.data?.chat_room_id);
 
                     this.dispatch(increaseUnreadMessage({
+                        chat_room_id: e?.data?.chat_room_id,
+                        created_at: e?.data?.created_at
+                    }));
+                }
+            } else {
+                if (currentScreen?.name != 'NurseChat' || currentScreen?.params?.patient?.chat_room_id != e?.data?.chat_room_id) {
+                    this.dispatch(markReadMessages({
                         chat_room_id: e?.data?.chat_room_id,
                         created_at: e?.data?.created_at
                     }));

@@ -5,7 +5,7 @@ import { SafeAreaViewWithStatusBar } from 'custom-components/FocusAwareStatusBar
 import ImageLoader from 'custom-components/ImageLoader'
 import { debounce, isEqual } from 'lodash'
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react'
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
+import { RefreshControl, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
 import Entypo from 'react-native-vector-icons/Entypo'
 import { useDispatch, useSelector } from 'react-redux'
@@ -109,6 +109,9 @@ const Home: FC = () => {
       <View style={{ height: 1, alignSelf: 'center', width: '100%', backgroundColor: '#d8deeb' }} />
       <View style={styles.container} >
         <FlatList
+          refreshControl={<RefreshControl refreshing={false} onRefresh={() => {
+            dispatch(fetchAllPatients({ fetchAllData: true, searchText: searchText }))
+          }} />}
           style={{ flex: 1 }}
           data={isSearching && searchText ? searchedPatients : allPatients}
           keyExtractor={(_, i) => i?.toString()}
