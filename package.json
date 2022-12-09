@@ -47,11 +47,11 @@
     "open-android-output-folder": "open ./android/output",
     "open-diawi": "open -a 'Google Chrome' 'https://www.diawi.com/' --args '--new-window'",
     "open-play-console": "open -a 'Google Chrome' 'https://play.google.com/console/u/0/' --args '--new-window'",
-    "open-transporter": "(pkill -x Transporter ||true) && open -n -F -a Transporter --args $PWD'/ios/output/theDoc.ipa'",
-    "clean-ios": "xcodebuild clean -workspace ios/theDoc.xcworkspace -scheme theDoc && xcodebuild clean -project ios/theDoc.xcodeproj -scheme theDoc && rm -rf ios/build && rm -rf ios/output",
-    "generate-archive": "xcodebuild -sdk iphoneos -workspace ios/theDoc.xcworkspace -scheme theDoc -configuration Release -archivePath ios/build/theDoc.xcarchive archive",
-    "generate-ipa": "xcodebuild -exportArchive -archivePath ios/build/theDoc.xcarchive -exportOptionsPlist ios/theDoc/exportOptions.plist -exportPath ios/output -allowProvisioningUpdates && yarn open-transporter",
-    "generate-ipa-diawi": "xcodebuild -exportArchive -archivePath ios/build/theDoc.xcarchive -exportOptionsPlist ios/theDoc/exportOptionsDiawi.plist -exportPath ios/output/diawi -allowProvisioningUpdates && yarn open-ios-output-folder"
+    "open-transporter": "(pkill -x Transporter ||true) && open -n -F -a Transporter --args $PWD'/ios/output/theDocChat.ipa'",
+    "clean-ios": "xcodebuild clean -workspace ios/theDocChat.xcworkspace -scheme theDocChat && xcodebuild clean -project ios/theDocChat.xcodeproj -scheme theDocChat && rm -rf ios/build && rm -rf ios/output",
+    "generate-archive": "xcodebuild -sdk iphoneos -workspace ios/theDocChat.xcworkspace -scheme theDocChat -configuration Release -archivePath ios/build/theDocChat.xcarchive archive",
+    "generate-ipa": "xcodebuild -exportArchive -archivePath ios/build/theDocChat.xcarchive -exportOptionsPlist ios/theDocChat/exportOptions.plist -exportPath ios/output -allowProvisioningUpdates && yarn open-transporter",
+    "generate-ipa-diawi": "xcodebuild -exportArchive -archivePath ios/build/theDocChat.xcarchive -exportOptionsPlist ios/theDocChat/exportOptionsDiawi.plist -exportPath ios/output/diawi -allowProvisioningUpdates && yarn open-ios-output-folder"
   },
   "dependencies": {
     "@notifee/react-native": "^7.2.0",
