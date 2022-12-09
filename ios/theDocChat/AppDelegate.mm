@@ -67,7 +67,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   [configProps addEntriesFromDictionary:appProperties];
 
 
-  UIView *rootView = RCTAppSetupDefaultRootView(bridge, @"theDoc", configProps);
+  UIView *rootView = RCTAppSetupDefaultRootView(bridge, @"theDocChat", configProps);
 
   if (@available(iOS 13.0, *)) {
     rootView.backgroundColor = [UIColor systemBackgroundColor];

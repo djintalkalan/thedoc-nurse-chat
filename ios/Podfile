@@ -4,7 +4,7 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 platform :ios, '13'
 install! 'cocoapods', :deterministic_uuids => false
 
-target 'theDoc' do
+target 'theDocChat' do
   
   permissions_path = '../node_modules/react-native-permissions/ios'
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
@@ -51,7 +51,7 @@ target 'theDoc' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'theDocTests' do
+  target 'theDocChatTests' do
     inherit! :complete
     # Pods for testing
   end

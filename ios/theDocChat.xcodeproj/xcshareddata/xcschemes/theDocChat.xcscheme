@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "theDoc.app"
-               BlueprintName = "theDoc"
-               ReferencedContainer = "container:theDoc.xcodeproj">
+               BuildableName = "theDocChat.app"
+               BlueprintName = "theDocChat"
+               ReferencedContainer = "container:theDocChat.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "theDocTests.xctest"
-               BlueprintName = "theDocTests"
-               ReferencedContainer = "container:theDoc.xcodeproj">
+               BuildableName = "theDocChatTests.xctest"
+               BlueprintName = "theDocChatTests"
+               ReferencedContainer = "container:theDocChat.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "theDoc.app"
-            BlueprintName = "theDoc"
-            ReferencedContainer = "container:theDoc.xcodeproj">
+            BuildableName = "theDocChat.app"
+            BlueprintName = "theDocChat"
+            ReferencedContainer = "container:theDocChat.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
@@ -78,9 +78,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "theDoc.app"
-            BlueprintName = "theDoc"
-            ReferencedContainer = "container:theDoc.xcodeproj">
+            BuildableName = "theDocChat.app"
+            BlueprintName = "theDocChat"
+            ReferencedContainer = "container:theDocChat.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
