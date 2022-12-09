@@ -2,7 +2,8 @@ import * as ApiProvider from 'api/APIProvider';
 import { resetStateOnLogin, resetStateOnLogout, setLoadingAction, setLoadingMsg, tokenExpired as tokenExpiredAction } from "app-store/actions";
 import { call, put, takeLatest } from "redux-saga/effects";
 import Database from 'src/database/Database';
-import { WaitTill, _showErrorMessage } from "utils";
+import Language from 'src/language/Language';
+import { WaitTill, _showErrorMessage, _showSuccessMessage } from "utils";
 import ActionTypes, { action } from "../action-types";
 
 function* _getAppVersion({ type, payload }: action): Generator<any, any, any> {
@@ -63,7 +64,12 @@ function* _doLogin({ type, payload }: action): Generator<any, any, any> {
 
 function* doLogout({ type, payload, }: action): Generator<any, any, any> {
     yield put(setLoadingAction(true));
+
     try {
+        const res = yield call(ApiProvider._logout);
+        if (res?.success) {
+            _showSuccessMessage((Language as any)[res?.message]);
+        }
         // _hidePopUpAlert()
         yield put(tokenExpiredAction(false));
         yield put(setLoadingAction(false));
