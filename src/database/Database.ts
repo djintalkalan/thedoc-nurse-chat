@@ -1,5 +1,5 @@
 // import * as RNLocalize from "react-native-localize";
-import { getGenericPassword as GetGenericPasswordFromKeyChain, setGenericPassword as SetGenericPasswordFromKeyChain } from 'react-native-keychain';
+import { ACCESSIBLE, getGenericPassword as GetGenericPasswordFromKeyChain, setGenericPassword as SetGenericPasswordFromKeyChain } from 'react-native-keychain';
 import { MMKVInstance, MMKVLoader, useMMKVStorage } from "react-native-mmkv-storage";
 import uuid from 'react-native-uuid';
 import { config } from 'src/api/config';
@@ -198,7 +198,7 @@ const DataInstance = Database.getInstance();
 
 export const retrieveToken = async () => {
     console.log("Retrieving Token");
-    const genericCredentials = await GetGenericPasswordFromKeyChain({ service: config.BUNDLE_ID_PACKAGE_NAME }).catch((e) => {
+    const genericCredentials = await GetGenericPasswordFromKeyChain({ service: config.BUNDLE_ID_PACKAGE_NAME, accessible: ACCESSIBLE.AFTER_FIRST_UNLOCK }).catch((e) => {
         console.log("Error in getting password from KeyChain")
     })
 
@@ -216,7 +216,7 @@ export const retrieveToken = async () => {
         console.log(e)
     }
     console.log("New Token is ", newToken);
-    await SetGenericPasswordFromKeyChain(config.BUNDLE_ID_PACKAGE_NAME, newToken, { service: config.BUNDLE_ID_PACKAGE_NAME }).catch(e => {
+    await SetGenericPasswordFromKeyChain(config.BUNDLE_ID_PACKAGE_NAME, newToken, { service: config.BUNDLE_ID_PACKAGE_NAME, accessible: ACCESSIBLE.AFTER_FIRST_UNLOCK }).catch(e => {
         console.log("Error setting uuid in the KeyChain")
         console.log(e)
     })
