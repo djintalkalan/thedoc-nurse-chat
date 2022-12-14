@@ -1,8 +1,9 @@
 
-import notifee, { AndroidDefaults, AndroidImportance, AndroidLaunchActivityFlag, EventType, Notification } from "@notifee/react-native";
+import notifee, { AndroidDefaults, AndroidGroupAlertBehavior, AndroidImportance, AndroidLaunchActivityFlag, EventType, Notification } from "@notifee/react-native";
 import messaging from '@react-native-firebase/messaging';
 import Database, { useDatabase } from 'database';
 import { Dispatch, useCallback, useEffect } from 'react';
+import { Platform } from "react-native";
 import { useDispatch } from 'react-redux';
 import { useUpdateLanguage } from "src/language/Language";
 import { NavigationService, WaitTill } from 'utils';
@@ -84,8 +85,19 @@ export const useFirebaseServices = () => {
     }, [isLogin])
 }
 
-export const onNotificationOpened = (notification: Notification) => {
+export const onNotificationOpened = async (notification: Notification) => {
+    const notifications = await notifee?.getDisplayedNotifications()?.catch(console.log) || []
+    if (Platform.OS == 'android') {
+        notifications?.forEach(_ => {
+            if (_?.notification?.android?.groupId == notification?.android?.groupId) {
+                notifee.cancelNotification(_?.id || '')
+            }
+        })
+    }
+
     navigateToPages(notification)
+
+
 }
 
 const navigateToPages = async (notification: any) => {
@@ -142,15 +154,39 @@ const showNotification = async (message: any, isBackground: boolean) => {
     }
     else {
         console.log("data is ", messageData);
+        const groupId = messageData?.patient?.patient_id?.toString()
+        const personName = messageData?.patient?.first_name + " " + messageData?.patient?.last_name
+        if (Platform.OS == 'android')
+            await notifee.displayNotification({
+                id: groupId,
+                title: title.trim() || "theDoc Chat",
+                subtitle: personName,
+                android: {
+                    channelId: CHANNEL_NAME,
+                    groupSummary: true,
+                    groupId: groupId,
+                    groupAlertBehavior: AndroidGroupAlertBehavior.CHILDREN,
+                    pressAction: {
+                        id: 'default',
+                        launchActivity: 'default',
+                        launchActivityFlags: [AndroidLaunchActivityFlag.SINGLE_TOP],
+                    },
+                },
+            });
+
         notifee.displayNotification({
+            // id: groupId,
             body: body?.trim(),
             title: title.trim() || "theDoc Chat",
+            subtitle: personName,
             data: { title, body, message: (JSON.stringify(messageData || '')) },
             android: {
                 channelId: CHANNEL_NAME,
                 sound: 'default',
                 // category: AndroidCategory.ALARM,
                 defaults: [AndroidDefaults.ALL],
+                groupId: groupId,
+                groupAlertBehavior: AndroidGroupAlertBehavior.CHILDREN,
                 pressAction: {
                     id: 'default',
                     launchActivity: 'default',
