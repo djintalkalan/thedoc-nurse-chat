@@ -171,7 +171,7 @@ const showNotification = async (message: any, isBackground: boolean) => {
         await createNotificationCategories(groupId)
 
         notifee.displayNotification({
-            id: Platform.OS == 'ios' ? groupId : undefined,
+            // id: Platform.OS == 'ios' ? groupId : undefined,
             body: body?.trim(),
             title: title.trim() || "theDoc Chat",
             subtitle: personName,
@@ -227,10 +227,17 @@ export const clearNotifications = async (id: string = '') => {
 
 
 const createNotificationCategories = async (id: string) => {
-    const allCategories = await notifee.getNotificationCategories()
-    let category = allCategories?.find(_ => _?.id == id)
-    if (!category) {
-        allCategories?.push({ id })
-        await notifee.setNotificationCategories(allCategories)
+    if (Platform.OS == 'ios') {
+        try {
+            const allCategories = await notifee.getNotificationCategories()
+            let category = allCategories?.find(_ => _?.id == id)
+            if (!category) {
+                await notifee.setNotificationCategories([...allCategories, { id }])
+            }
+        }
+        catch (e) {
+            console.log("E", e);
+        }
     }
+
 }
