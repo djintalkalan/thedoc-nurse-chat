@@ -137,8 +137,8 @@ const showNotification = async (message: any, isBackground: boolean) => {
     if (!message?.data?.message) return
     const { name, params } = NavigationService?.getCurrentScreen() ?? {}
     let { title, body, message: messageData } = message?.data ?? {};
-    console.log("title is ", title);
-    console.log("body is ", body);
+    // console.log("title is ", title);
+    // console.log("body is ", body);
 
     if (messageData && typeof messageData == 'string') {
         messageData = JSON.parse(messageData)
@@ -168,8 +168,10 @@ const showNotification = async (message: any, isBackground: boolean) => {
                 },
             });
 
+        await createNotificationCategories(groupId)
+
         notifee.displayNotification({
-            // id: Platform.OS == 'ios' ? groupId : undefined,
+            id: Platform.OS == 'ios' ? groupId : undefined,
             body: body?.trim(),
             title: title.trim() || "theDoc Chat",
             subtitle: personName,
@@ -189,8 +191,10 @@ const showNotification = async (message: any, isBackground: boolean) => {
             },
             ios: {
                 sound: 'default',
-                threadId: groupId
-            }
+                threadId: groupId,
+                categoryId: groupId
+            },
+
         });
     }
 }
@@ -218,5 +222,15 @@ export const clearNotifications = async (id: string = '') => {
                 notifee.cancelNotification(_?.id?.toString() || '')
             }
         })
+    }
+}
+
+
+const createNotificationCategories = async (id: string) => {
+    const allCategories = await notifee.getNotificationCategories()
+    let category = allCategories?.find(_ => _?.id == id)
+    if (!category) {
+        allCategories?.push({ id })
+        await notifee.setNotificationCategories(allCategories)
     }
 }
