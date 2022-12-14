@@ -61,6 +61,7 @@ class Service {
     closeSocket = () => {
         if (this.socket) {
             this.socket.disconnect();
+            this.socket.removeAllListeners();
             Database.setSocketConnected(false);
             this.socket = undefined
         }
