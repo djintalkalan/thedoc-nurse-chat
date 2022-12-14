@@ -52,7 +52,6 @@ export const useFirebaseServices = () => {
                 // messaging().registerDeviceForRemoteMessages()
             }).catch(e => {
                 console.log("error in getting token", e);
-
             })
         }
     }, [])
@@ -86,18 +85,30 @@ export const useFirebaseServices = () => {
 }
 
 export const onNotificationOpened = async (notification: Notification) => {
-    const notifications = await notifee?.getDisplayedNotifications()?.catch(console.log) || []
+    // const notifications = await notifee?.getDisplayedNotifications()?.catch(console.log) || []
     if (Platform.OS == 'android') {
-        notifications?.forEach(_ => {
-            if (_?.notification?.android?.groupId == notification?.android?.groupId) {
-                notifee.cancelNotification(_?.id || '')
-            }
-        })
+        try {
+            const notifications = await notifee?.getDisplayedNotifications()?.catch(console.log) || []
+            notifications?.forEach(_ => {
+                if (_?.notification?.android?.groupId == notification?.android?.groupId) {
+                    notifee.cancelNotification(_?.id || '')
+                }
+            })
+        }
+        catch (e) {
+            console.log("e");
+        }
     }
-
+    // else {
+    // const thisPatientId = (typeof notification?.data?.message == 'string' ? JSON.parse(notification?.data?.message) : notification?.data?.message)?.patient?.patient_id
+    // notifications?.forEach(_ => {
+    //     const patientId = (typeof _?.notification?.data?.message == 'string' ? JSON.parse(_?.notification?.data?.message) : _?.notification?.data?.message)?.patient?.patient_id
+    //     if (thisPatientId == patientId) {
+    //         notifee.cancelNotification(_?.id || '')
+    //     }
+    // })
+    // }
     navigateToPages(notification)
-
-
 }
 
 const navigateToPages = async (notification: any) => {
@@ -175,7 +186,7 @@ const showNotification = async (message: any, isBackground: boolean) => {
             });
 
         notifee.displayNotification({
-            // id: groupId,
+            id: Platform.OS == 'ios' ? groupId : undefined,
             body: body?.trim(),
             title: title.trim() || "theDoc Chat",
             subtitle: personName,
