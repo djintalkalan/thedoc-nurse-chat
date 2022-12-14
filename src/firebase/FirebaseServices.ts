@@ -85,29 +85,9 @@ export const useFirebaseServices = () => {
 }
 
 export const onNotificationOpened = async (notification: Notification) => {
-    const notifications = await notifee?.getDisplayedNotifications()?.catch(console.log) || []
-    if (Platform.OS == 'android') {
-        try {
-            // const notifications = await notifee?.getDisplayedNotifications()?.catch(console.log) || []
-            notifications?.forEach(_ => {
-                if (_?.notification?.android?.groupId == notification?.android?.groupId) {
-                    notifee.cancelNotification(_?.id || '')
-                }
-            })
-        }
-        catch (e) {
-            console.log("e");
-        }
-    }
-    else {
-        const thisPatientId = (typeof notification?.data?.message == 'string' ? JSON.parse(notification?.data?.message) : notification?.data?.message)?.patient?.patient_id
-        notifications?.forEach(_ => {
-            const patientId = (typeof _?.notification?.data?.message == 'string' ? JSON.parse(_?.notification?.data?.message) : _?.notification?.data?.message)?.patient?.patient_id
-            if (thisPatientId == patientId) {
-                notifee.cancelNotification(_?.id || '')
-            }
-        })
-    }
+    //    const chat_room_id = Platform.OS=='ios'? ((typeof notification?.data?.message == 'string' ? JSON.parse(notification?.data?.message) : notification?.data?.message)?.patient?.patient_id):notification?.android?.groupId
+    const chat_room_id = notification?.android?.groupId
+    await clearNotifications(chat_room_id)
     navigateToPages(notification)
 }
 
@@ -186,7 +166,7 @@ const showNotification = async (message: any, isBackground: boolean) => {
             });
 
         notifee.displayNotification({
-            // id: Platform.OS == 'ios' ? groupId : undefined,
+            id: Platform.OS == 'ios' ? groupId : undefined,
             body: body?.trim(),
             title: title.trim() || "theDoc Chat",
             subtitle: personName,
@@ -209,4 +189,29 @@ const showNotification = async (message: any, isBackground: boolean) => {
             }
         });
     }
+}
+
+export const clearNotifications = async (id: string = '') => {
+    // const notifications = await notifee?.getDisplayedNotifications()?.catch(console.log) || []
+    if (Platform.OS == 'android') {
+        try {
+            const notifications = await notifee?.getDisplayedNotifications()?.catch(console.log)
+            notifications && notifications?.forEach(_ => {
+                if (_?.notification?.android?.groupId == id) {
+                    notifee.cancelNotification(_?.id || '')
+                }
+            })
+        }
+        catch (e) {
+            console.log("e");
+        }
+    }
+    // else {
+    //     notifications && notifications?.forEach(_ => {
+    //         const patientId = (typeof _?.notification?.data?.message == 'string' ? JSON.parse(_?.notification?.data?.message) : _?.notification?.data?.message)?.patient?.patient_id
+    //         if (id == patientId) {
+    //             notifee.cancelNotification(_?.id || '')
+    //         }
+    //     })
+    // }
 }

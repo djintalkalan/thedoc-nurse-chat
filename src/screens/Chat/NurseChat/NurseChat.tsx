@@ -6,6 +6,7 @@ import { Images } from 'assets/Images';
 import { MyHeader, Text, useKeyboardService } from 'custom-components';
 import { SafeAreaViewWithStatusBar } from 'custom-components/FocusAwareStatusBar';
 import { useDatabase } from 'database';
+import { clearNotifications } from 'firebase-services';
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { Dimensions, FlatList, Platform, StyleSheet, TextInput, View } from 'react-native';
 import { Bar } from 'react-native-progress';
@@ -62,6 +63,7 @@ const NurseChat: FC<any> = (props: any) => {
         setTimeout(() => {
             loadMore = true
         }, 200);
+        clearNotifications(patient?.chat_room_id)
         return () => { loadMore = false }
     }, [])
 
