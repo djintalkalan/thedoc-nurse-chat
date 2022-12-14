@@ -166,7 +166,7 @@ const showNotification = async (message: any, isBackground: boolean) => {
     else {
         console.log("data is ", messageData);
         const groupId = messageData?.patient?.patient_id?.toString()
-        const personName = messageData?.patient?.first_name + " " + messageData?.patient?.last_name
+        const personName = messageData?.patient?.PatientGeneralInformation?.first_name + " " + messageData?.patient?.PatientGeneralInformation?.last_name
         if (Platform.OS == 'android')
             await notifee.displayNotification({
                 id: groupId,
