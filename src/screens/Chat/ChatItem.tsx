@@ -19,7 +19,7 @@ interface ChatItemProps {
     patientName: string
     patientReadOnDate: string
 }
-const ChatItem = (props: ChatItemProps) => {
+const ChatItem = React.memo((props: ChatItemProps) => {
     const { message, myMessage, messageType, imageUrl, docUrl, date, originalFileName, patientName, patientReadOnDate } = props
 
     return (
@@ -51,7 +51,7 @@ const ChatItem = (props: ChatItemProps) => {
             </View>
         </View>
     )
-}
+})
 
 const styles = StyleSheet.create({
     chatContainer: {

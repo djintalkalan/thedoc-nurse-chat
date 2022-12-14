@@ -118,6 +118,8 @@ const NurseChat: FC<any> = (props: any) => {
         />
     }, [])
 
+    const _onChangeText = useCallback((e: string) => { textMessageRef.current = e }, [])
+
     return (
         <SafeAreaViewWithStatusBar edges={['bottom', 'top']}>
             <View style={styles.container}>
@@ -176,7 +178,7 @@ const NurseChat: FC<any> = (props: any) => {
                     disabled={!socketConnected}
                     onPressSend={_onPressSend}
                     chat_room_id={patient?.chat_room_id}
-                    onChange={(e: string) => textMessageRef.current = e}
+                    onChange={_onChangeText}
                 />
                 {!socketConnected ? <View style={{ paddingVertical: scaler(4), paddingHorizontal: scaler(10), backgroundColor: colors.colorRed }} >
                     <Text style={{ color: colors.colorWhite, textAlign: 'center', fontSize: scaler(10) }} >{Language.chat_services_down}</Text>
