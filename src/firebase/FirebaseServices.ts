@@ -137,6 +137,9 @@ const showNotification = async (message: any, isBackground: boolean) => {
     if (!message?.data?.message) return
     const { name, params } = NavigationService?.getCurrentScreen() ?? {}
     let { title, body, message: messageData } = message?.data ?? {};
+    console.log("title is ", title);
+    console.log("body is ", body);
+
     if (messageData && typeof messageData == 'string') {
         messageData = JSON.parse(messageData)
     }
@@ -166,7 +169,7 @@ const showNotification = async (message: any, isBackground: boolean) => {
             });
 
         notifee.displayNotification({
-            id: Platform.OS == 'ios' ? groupId : undefined,
+            // id: Platform.OS == 'ios' ? groupId : undefined,
             body: body?.trim(),
             title: title.trim() || "theDoc Chat",
             subtitle: personName,
@@ -186,19 +189,21 @@ const showNotification = async (message: any, isBackground: boolean) => {
             },
             ios: {
                 sound: 'default',
+                threadId: groupId
             }
         });
     }
 }
 
 export const clearNotifications = async (id: string = '') => {
-    // const notifications = await notifee?.getDisplayedNotifications()?.catch(console.log) || []
+    const notifications = await notifee?.getDisplayedNotifications()?.catch(console.log)
+    console.log("notifications", notifications)
     if (Platform.OS == 'android') {
         try {
-            const notifications = await notifee?.getDisplayedNotifications()?.catch(console.log)
+            // const notifications = await notifee?.getDisplayedNotifications()?.catch(console.log)
             notifications && notifications?.forEach(_ => {
                 if (_?.notification?.android?.groupId == id) {
-                    notifee.cancelNotification(_?.id || '')
+                    notifee.cancelNotification(_?.id?.toString() || '')
                 }
             })
         }
@@ -206,12 +211,12 @@ export const clearNotifications = async (id: string = '') => {
             console.log("e");
         }
     }
-    // else {
-    //     notifications && notifications?.forEach(_ => {
-    //         const patientId = (typeof _?.notification?.data?.message == 'string' ? JSON.parse(_?.notification?.data?.message) : _?.notification?.data?.message)?.patient?.patient_id
-    //         if (id == patientId) {
-    //             notifee.cancelNotification(_?.id || '')
-    //         }
-    //     })
-    // }
+    else {
+        notifications && notifications?.forEach(_ => {
+            const patientId = (typeof _?.notification?.data?.message == 'string' ? JSON.parse(_?.notification?.data?.message) : _?.notification?.data?.message)?.patient?.patient_id
+            if (id == patientId) {
+                notifee.cancelNotification(_?.id?.toString() || '')
+            }
+        })
+    }
 }
