@@ -69,7 +69,7 @@ const NurseChat: FC<any> = (props: any) => {
         setTimeout(() => {
             if (chats?.length > 0) {
                 const lastMessage = chats[0]
-                console.log("lastMessage", lastMessage);
+                // console.log("lastMessage", lastMessage);
                 SocketService.emit(EMIT_READ_MESSAGE, {
                     chat_room_id: patient?.chat_room_id,
                     last_read_message_id: lastMessage?.id,

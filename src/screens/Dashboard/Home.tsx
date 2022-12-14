@@ -4,7 +4,7 @@ import { MyHeader, Text } from 'custom-components'
 import { SafeAreaViewWithStatusBar } from 'custom-components/FocusAwareStatusBar'
 import ImageLoader from 'custom-components/ImageLoader'
 import { debounce, isEqual } from 'lodash'
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react'
+import React, { FC, memo, useCallback, useEffect, useRef, useState } from 'react'
 import { RefreshControl, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
 import Entypo from 'react-native-vector-icons/Entypo'
@@ -17,7 +17,6 @@ const Home: FC = () => {
   const dispatch = useDispatch()
 
   const [isSearching, setSearching] = useState(false);
-
   const allPatients = useSelector(state => {
     return state.patients?.allPatients
   })
@@ -36,22 +35,7 @@ const Home: FC = () => {
 
   const _renderChatItem = useCallback(({ item, index }: { item: any, index: number }) => {
     if (item?.total_unread) item.total_unread = parseInt(item?.total_unread)
-    return <TouchableOpacity
-      onPress={() => { NavigationService.navigate("NurseChat", { patient: item }) }}
-      activeOpacity={0.6} style={{ padding: scaler(15), paddingVertical: scaler(16), width: '100%', flexDirection: 'row', alignItems: 'center' }} >
-      <ImageLoader
-        source={parseImageUrl(item?.patient_photo, item?.chat_room_id)}
-        placeholderSource={Images.ic_profile_placeholder}
-        placeholderStyle={styles.imagePlaceholder}
-        style={styles.image}
-        resizeMode={'cover'}
-      />
-      <Text ellipsizeMode='tail' type={item?.total_unread ? 'extraBold' : 'medium'} style={{ marginLeft: scaler(8), fontSize: scaler(14.5), color: colors?.colorPrimary, flex: 1, }} >{item?.first_name} {item?.last_name || ''}</Text>
-      {item?.total_unread ? <View style={styles.countView} >
-        <Text type={'bold'} style={{ fontSize: scaler(12), color: colors?.colorWhite, }} >{item?.total_unread?.toString()}</Text>
-      </View> : null}
-      <Text type={item?.total_unread ? 'extraBold' : 'medium'} style={{ fontSize: scaler(12), color: colors?.colorSecondary, }} >{getChatDateTimeAtHome(item?.created_message_time)}</Text>
-    </TouchableOpacity>
+    return <HomeItem item={item} />
   }, [],)
 
   const searchInputRef = useRef<TextInput>(null);
@@ -126,6 +110,25 @@ const Home: FC = () => {
     </SafeAreaViewWithStatusBar>
   );
 };
+
+const HomeItem = memo(({ item }: { item: any }) => {
+  return <TouchableOpacity
+    onPress={() => { NavigationService.navigate("NurseChat", { patient: item }) }}
+    activeOpacity={0.6} style={{ padding: scaler(15), paddingVertical: scaler(16), width: '100%', flexDirection: 'row', alignItems: 'center' }} >
+    <ImageLoader
+      source={parseImageUrl(item?.patient_photo, item?.chat_room_id)}
+      placeholderSource={Images.ic_profile_placeholder}
+      placeholderStyle={styles.imagePlaceholder}
+      style={styles.image}
+      resizeMode={'cover'}
+    />
+    <Text ellipsizeMode='tail' type={item?.total_unread ? 'extraBold' : 'medium'} style={{ marginLeft: scaler(8), fontSize: scaler(14.5), color: colors?.colorPrimary, flex: 1, }} >{item?.first_name} {item?.last_name || ''}</Text>
+    {item?.total_unread ? <View style={styles.countView} >
+      <Text type={'bold'} style={{ fontSize: scaler(12), color: colors?.colorWhite, }} >{item?.total_unread?.toString()}</Text>
+    </View> : null}
+    <Text type={item?.total_unread ? 'extraBold' : 'medium'} style={{ fontSize: scaler(12), color: colors?.colorSecondary, }} >{getChatDateTimeAtHome(item?.created_message_time)}</Text>
+  </TouchableOpacity>
+})
 
 export default Home;
 

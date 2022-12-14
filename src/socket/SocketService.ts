@@ -68,8 +68,8 @@ class Service {
     }
 
     emit = (event: string, data?: any) => {
-        console.log("Event Emit", event);
-        console.log("Event Payload", data);
+        console.log("Event Emit", event, data);
+        // console.log("Event Payload", data);
         this.socket?.emit(event, {
             event,
             payload: data
@@ -141,7 +141,7 @@ class Service {
 
     private onPersonalMessage = (e: any) => {
         console.log('onPersonalMessage', e);
-        console.log('userdata', Database.getStoredValue('userData'));
+        // console.log('userdata', Database.getStoredValue('userData'));
         if (e?.status == 200 && e?.data) {
             const data = e?.data
             this.dispatch(setChatInPatient({
@@ -149,7 +149,7 @@ class Service {
                 chats: [data]
             }))
             const currentScreen = NavigationService.getCurrentScreen()
-            console.log("currentScreen", currentScreen);
+            // console.log("currentScreen", currentScreen);
 
             if (e?.data?.User?.patient_id != 0) {
 

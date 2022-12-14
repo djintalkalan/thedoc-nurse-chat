@@ -31,8 +31,8 @@ export const patientChatReducer = (state: IPatientChatReducer = initialPatientCh
             if (action?.payload?.message_id) {
                 newState.chatRooms[chatRoomUserId].chats = unionBy(newState.chatRooms[chatRoomUserId]?.chats, action?.payload?.chats, "id")
             } else newState.chatRooms[chatRoomUserId].chats = unionBy(action?.payload?.chats, newState.chatRooms[chatRoomUserId]?.chats, "id")
-            console.log("action", action);
-            console.log("newState", newState);
+            // console.log("action", action);
+            // console.log("newState", newState);
 
             return newState
         case ActionTypes.REFRESH_CHAT_IN_PATIENT:
