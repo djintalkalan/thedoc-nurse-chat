@@ -5,7 +5,7 @@ import notifee, { EventType } from "@notifee/react-native";
 import messaging from '@react-native-firebase/messaging';
 import { onMessageReceived, onNotificationOpened } from 'firebase-services';
 import React from 'react';
-import { AppRegistry } from 'react-native';
+import { AppRegistry, Platform } from 'react-native';
 import 'react-native-gesture-handler';
 import invokeApp from 'react-native-invoke-app';
 import App from 'src/App';
@@ -20,8 +20,7 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
             break;
     }
 });
-
-messaging().setBackgroundMessageHandler(async (m) => await onMessageReceived(m, true));
+Platform.OS == 'android' && messaging().setBackgroundMessageHandler(async (m) => await onMessageReceived(m, true));
 
 
 const HeadlessCheck = ({ isHeadless }) => {

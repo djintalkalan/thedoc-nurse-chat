@@ -127,6 +127,7 @@ export const onMessageReceived = async (message: any, isBackground: boolean = fa
     else
         console.log("Firebase Message ", message)
 
+    // return
     const isLogin = Database.getStoredValue("isLogin");
     if (isLogin) {
         showNotification(message, isBackground)
@@ -153,7 +154,7 @@ const showNotification = async (message: any, isBackground: boolean) => {
         if (Platform.OS == 'android')
             await notifee.displayNotification({
                 id: groupId,
-                title: title.trim() || "theDoc Chat",
+                title: title?.trim() || "theDoc Chat",
                 subtitle: personName,
                 android: {
                     channelId: CHANNEL_NAME,
@@ -173,7 +174,7 @@ const showNotification = async (message: any, isBackground: boolean) => {
         notifee.displayNotification({
             // id: Platform.OS == 'ios' ? groupId : undefined,
             body: body?.trim(),
-            title: title.trim() || "theDoc Chat",
+            title: title?.trim() || "theDoc Chat",
             subtitle: personName,
             data: { title, body, message: (JSON.stringify(messageData || '')) },
             android: {

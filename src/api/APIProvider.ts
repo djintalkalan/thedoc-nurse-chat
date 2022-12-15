@@ -3,6 +3,7 @@ import { setLoadingAction, tokenExpired } from 'app-store/actions';
 import { store } from 'app-store/store';
 import axios, { AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
 import React, { MutableRefObject } from 'react';
+import { Platform } from 'react-native';
 import { Progress, Request, RNS3 } from 'react-native-aws3';
 import Database, { retrieveToken } from 'src/database/Database';
 import { LanguageType } from 'src/language/Language';
@@ -68,6 +69,8 @@ const api = axios.create({
   headers: {
     'Accept': "application/json",
     'X-Platform-Type': 'app',
+    platform: 'nurseapp',
+    'OS-TYPE': Platform.OS
   }
 });
 
@@ -134,7 +137,6 @@ async function fetchApiData(url: string, method?: Method, body?: any) {
       "Content-Type": (isMultipart) ? "multipart/form-data" : "application/json",
       Authorization: authToken ? `Bearer ${authToken}` : '',
       'Accept-Language': selectedLanguage,
-      platform: 'nurseapp',
       uuid
     }
     return callApi(url, header, body, method)
