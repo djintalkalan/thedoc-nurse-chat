@@ -130,6 +130,15 @@ class Database {
         return this.otherDataStorage.getBool(key) ?? ""
     }
 
+    public clearStorage = () => {
+        Database.phoneStorage = new MMKVLoader().withEncryption().initialize();
+        this.userDataStorage = new MMKVLoader().withEncryption().withInstanceID("userDataStorage").initialize();
+        this.otherDataStorage = new MMKVLoader().withEncryption().withInstanceID("otherDataStorage").initialize();
+        this.languageStorage = new MMKVLoader().withEncryption().withInstanceID("languageStorage").initialize();
+        this.socketStorage = new MMKVLoader().withEncryption().withInstanceID("socketStorage").initialize();
+        this.uuidStorage = new MMKVLoader().withEncryption().withInstanceID("uuidStorage").initialize();
+    }
+
     //@ts-ignore
     public getStoredValue = <T = any>(key: StorageType, defaultValue?: any): T => {
         switch (key) {
@@ -231,8 +240,12 @@ export const retrieveToken = async () => {
         if (!uuid) {
             uuid = await retrieveToken();
             DataInstance?.setValue('uuid', uuid)
+            if (DataInstance?.getStoredValue('uuid') != uuid) {
+                DataInstance.clearStorage();
+            }
         }
-    }, 500);
+    }, 1000);
+
 })()
 
 export default DataInstance
