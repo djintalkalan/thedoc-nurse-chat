@@ -25,6 +25,23 @@ class Database {
 
     private static mInstance: Database
 
+    static phoneStorage: MMKVInstance;
+
+    private userDataStorage: MMKVInstance;
+    private otherDataStorage: MMKVInstance;
+    private languageStorage: MMKVInstance;
+    private socketStorage: MMKVInstance;
+    private uuidStorage: MMKVInstance;
+
+    constructor() {
+        Database.phoneStorage = new MMKVLoader().withEncryption().initialize();
+        this.userDataStorage = new MMKVLoader().withEncryption().withInstanceID("userDataStorage").initialize();
+        this.otherDataStorage = new MMKVLoader().withEncryption().withInstanceID("otherDataStorage").initialize();
+        this.languageStorage = new MMKVLoader().withEncryption().withInstanceID("languageStorage").initialize();
+        this.socketStorage = new MMKVLoader().withEncryption().withInstanceID("socketStorage").initialize();
+        this.uuidStorage = new MMKVLoader().withEncryption().withInstanceID("uuidStorage").initialize();
+    }
+
     static getInstance = () => {
         if (!this.mInstance) {
             this.mInstance = new Database()
@@ -33,13 +50,7 @@ class Database {
     }
 
 
-    static phoneStorage = new MMKVLoader().withEncryption().initialize();
 
-    private userDataStorage = new MMKVLoader().withEncryption().withInstanceID("userDataStorage").initialize();
-    private otherDataStorage = new MMKVLoader().withEncryption().withInstanceID("otherDataStorage").initialize();
-    private languageStorage = new MMKVLoader().withEncryption().withInstanceID("languageStorage").initialize();
-    private socketStorage = new MMKVLoader().withEncryption().withInstanceID("socketStorage").initialize();
-    private uuidStorage = new MMKVLoader().withEncryption().withInstanceID("uuidStorage").initialize();
 
     DefaultCountry = 'US' // RNLocalize.getCountry() ?? 'US'
 
