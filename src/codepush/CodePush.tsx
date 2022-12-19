@@ -3,7 +3,7 @@ import { colors } from 'assets';
 import { Text } from 'custom-components';
 import { round, toNumber } from 'lodash';
 import { useCallback, useEffect, useReducer } from 'react';
-import { Dimensions, TouchableOpacity, View } from 'react-native';
+import { Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
 import CodePush from 'react-native-code-push';
 import { Bar as ProgressBar } from 'react-native-progress';
 import { scaler } from 'utils';
@@ -21,17 +21,20 @@ const reducer = (state: { isDialogVisible: boolean, percent: number, status: str
             return state
     }
 }
-export const useCodePushDialog = () => {
+export const useCodePushDialog = (time: number = 2000) => {
 
     useEffect(() => {
         !__DEV__ && setTimeout(() => {
             getCodePushUpdate()
-        }, 2000);
-    }, [])
+        }, time);
+    }, [time])
 
 
     const [{ isDialogVisible, status, percent, message }, dispatch] = useReducer(reducer, {
-        isDialogVisible: false, percent: 0, status: "", message: "Downloading update"
+        isDialogVisible: false,
+        percent: 0,
+        status: "",
+        message: "Downloading update"
     })
 
 
@@ -117,29 +120,90 @@ export const useCodePushDialog = () => {
         });
     }, [])
 
-    return isDialogVisible ? (<TouchableOpacity activeOpacity={1} style={{ backgroundColor: '#00000080', flex: 1, position: 'absolute', justifyContent: 'flex-end', top: 0, bottom: 0, left: 0, right: 0, }} >
-        <View style={{ alignContent: 'center', justifyContent: 'center', paddingVertical: scaler(15), backgroundColor: 'white', elevation: 5, marginHorizontal: scaler(5), borderTopLeftRadius: scaler(10), borderTopRightRadius: scaler(10) }} >
-            <Text style={{ paddingBottom: scaler(10), fontWeight: '500', textAlign: 'center', color: 'black', fontSize: scaler(18) }} >Update available</Text>
-            <View style={{ alignSelf: 'center', alignItems: 'center', flexDirection: 'row', width: width / 1.5, paddingHorizontal: scaler(5), justifyContent: 'space-between' }} >
-                <Text style={{ fontSize: scaler(12), fontWeight: '500', color: "#7D7F85", marginBottom: scaler(5) }} >{percent + "%"}</Text>
-                <Text style={{ fontSize: scaler(12), fontWeight: '400', color: "#7D7F85", marginBottom: scaler(5) }} >{status}</Text>
+    return isDialogVisible ? (<TouchableOpacity activeOpacity={1} style={styles.container} >
+        <View style={styles.card} >
+            <Text style={styles.updateText} >Update available</Text>
+            <View style={styles.percentRow} >
+                <Text style={styles.percentText} >{percent + "%"}</Text>
+                <Text style={styles.statusText} >{status}</Text>
             </View>
-
-            <ProgressBar width={width / 1.5} height={scaler(10)} animated
+            <ProgressBar
+                width={width / 1.5}
+                height={scaler(10)} animated
                 indeterminateAnimationDuration={900}
                 indeterminate={toNumber(percent) < 2 || toNumber(percent) == 100}
                 useNativeDriver
                 style={{ alignSelf: 'center', }}
                 color={colors.colorPrimary}
                 progress={toNumber(percent) / 100} />
-            <View style={{ alignSelf: 'center', alignItems: 'center', flexDirection: 'row', width: width / 1.5, paddingHorizontal: scaler(5), justifyContent: 'center' }} >
-                <Text style={{ fontSize: scaler(14), fontWeight: '500', color: 'black', marginTop: scaler(10) }} >{message}</Text>
+            <View style={styles.messageView} >
+                <Text style={styles.messageText} >{message}</Text>
             </View>
-
-            <Text style={{ paddingVertical: scaler(15), fontWeight: '500', textAlign: 'center', color: "#7D7F85", fontSize: scaler(12) }} >Please wait until we finish installing the available update. It won't take much time.</Text>
-
+            <Text style={styles.lineText} >Please wait until we finish installing the available update. It won't take much time.</Text>
         </View>
     </TouchableOpacity>) : undefined
 }
 
 export default CodePush({ checkFrequency: CodePush.CheckFrequency.MANUAL })
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: '#00000080',
+        flex: 1, position: 'absolute',
+        justifyContent: 'flex-end',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+    },
+    card: {
+        alignContent: 'center', justifyContent: 'center',
+        paddingVertical: scaler(15),
+        backgroundColor: 'white',
+        elevation: 5,
+        marginHorizontal: scaler(5),
+        borderTopLeftRadius: scaler(10),
+        borderTopRightRadius: scaler(10)
+    },
+    updateText: {
+        paddingBottom: scaler(10),
+        fontWeight: '500', textAlign: 'center',
+        color: 'black', fontSize: scaler(18)
+    },
+    percentRow: {
+        alignSelf: 'center',
+        alignItems: 'center', flexDirection: 'row',
+        width: width / 1.5, paddingHorizontal: scaler(5),
+        justifyContent: 'space-between'
+    },
+    percentText: {
+        fontSize: scaler(12),
+        fontWeight: '500', color: "#7D7F85",
+        marginBottom: scaler(5)
+    },
+    statusText: {
+        fontSize: scaler(12),
+        fontWeight: '400',
+        color: "#7D7F85", marginBottom: scaler(5)
+    },
+    messageView: {
+        alignSelf: 'center',
+        alignItems: 'center', flexDirection: 'row',
+        width: width / 1.5, paddingHorizontal: scaler(5),
+        justifyContent: 'center'
+    },
+    messageText: {
+        fontSize: scaler(14),
+        fontWeight: '500',
+        color: 'black',
+        marginTop: scaler(10)
+    },
+    lineText: {
+        paddingVertical: scaler(15),
+        paddingHorizontal: scaler(10),
+        fontWeight: '500', textAlign: 'center',
+        color: "#7D7F85", fontSize: scaler(12)
+    }
+
+
+})
