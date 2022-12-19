@@ -54,6 +54,9 @@
             "analytics": [
                 "src/analytics/AnalyticService"
             ],
+            "codepush": [
+                "src/codepush/CodePush"
+            ],
         },
     }
 }

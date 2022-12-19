@@ -17,8 +17,7 @@ module.exports = (api) => {
         "firebase-services": "./src/firebase/FirebaseServices.ts",
         "socket": "./src/socket",
         "analytics": "./src/analytics/AnalyticService.ts",
-        "intercom": "./src/intercom/IntercomService.ts",
-        "rollbar-service": "./src/rollbar"
+        "codepush": "./src/codepush/CodePush.tsx"
       }
     }
   ]
